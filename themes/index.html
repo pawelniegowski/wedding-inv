@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wedding Invitation — Theme Gallery</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  background:linear-gradient(160deg,#3a352b,#232019);
+  color:#e8e2d2;
+  font-family:Georgia,"Times New Roman",serif;
+  padding:clamp(16px,4vw,56px);
+}
+h1{
+  font-weight:normal;
+  font-size:clamp(1.4rem,4vw,2rem);
+  letter-spacing:.08em;
+  text-align:center;
+  margin-bottom:.4em;
+}
+p.sub{
+  text-align:center;
+  font-style:italic;
+  opacity:.7;
+  margin-bottom:2.5em;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:clamp(16px,3vw,36px);
+  max-width:1400px;
+  margin:0 auto;
+}
+.tile{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  text-align:center;
+}
+.tile h2{
+  font-weight:normal;
+  font-size:1.05rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.tile .fav{color:#e9c46a;font-size:.8em;letter-spacing:.2em}
+.compare{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:flex-start;
+}
+.compare figure{flex:1;min-width:0}
+.compare img{
+  width:100%;
+  border-radius:6px;
+  display:block;
+}
+.pv{
+  aspect-ratio:375/667;
+  position:relative;
+  overflow:hidden;
+  border-radius:6px;
+  background:#2c2921;
+}
+.pv iframe{
+  position:absolute;
+  top:0;left:0;
+  width:375px;
+  height:667px;
+  border:0;
+  transform-origin:0 0;
+  pointer-events:none;
+}
+.compare figcaption{
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  opacity:.6;
+  margin-top:8px;
+}
+a.open{
+  display:inline-block;
+  margin:0 auto;
+  padding:.6em 1.6em;
+  border:1px solid rgba(233,196,106,.6);
+  border-radius:999px;
+  color:#e9c46a;
+  text-decoration:none;
+  letter-spacing:.14em;
+  font-size:.85rem;
+}
+a.open:hover{background:rgba(233,196,106,.12)}
+</style>
+</head>
+<body>
+<h1>Wedding Invitation Themes</h1>
+<p class="sub">reference vs. CSS approximation &mdash; click to open a theme full-screen</p>
+<div class="grid">
+
+  <div class="tile">
+    <h2>Woodland <span style="opacity:.5">&mdash;</span> Rustic Trees</h2>
+    <div class="compare">
+      <figure><img src="../reference/woodland-forest-rustic-trees.png" alt="Reference: woodland forest invitation"><figcaption>Reference</figcaption></figure>
+      <figure><div class="pv"><iframe src="woodland/index.html" title="Woodland theme preview" scrolling="no" tabindex="-1"></iframe></div><figcaption>Theme</figcaption></figure>
+    </div>
+    <a class="open" href="woodland/index.html">Open theme</a>
+  </div>
+
+  <div class="tile">
+    <h2>Vintage Botanical <span style="opacity:.5">&mdash;</span> Storybook</h2>
+    <div class="compare">
+      <figure><img src="../reference/vintage-botanical-storybook.png" alt="Reference: vintage botanical invitation"><figcaption>Reference</figcaption></figure>
+      <figure><div class="pv"><iframe src="botanical/index.html" title="Botanical theme preview" scrolling="no" tabindex="-1"></iframe></div><figcaption>Theme</figcaption></figure>
+    </div>
+    <a class="open" href="botanical/index.html">Open theme</a>
+  </div>
+
+  <div class="tile">
+    <h2>Art Nouveau <span style="opacity:.5">&mdash;</span> The Thistle</h2>
+    <div class="compare">
+      <figure><img src="../reference/art-nouveau-thistle.png" alt="Reference: art nouveau thistle invitation"><figcaption>Reference</figcaption></figure>
+      <figure><div class="pv"><iframe src="nouveau/index.html" title="Art nouveau theme preview" scrolling="no" tabindex="-1"></iframe></div><figcaption>Theme</figcaption></figure>
+    </div>
+    <a class="open" href="nouveau/index.html">Open theme</a>
+  </div>
+
+  <div class="tile">
+    <h2>Kismet <span style="opacity:.5">&mdash;</span> 1930s Floral <span class="fav">&#9733; favorite</span></h2>
+    <div class="compare">
+      <figure><img src="../reference/1930s-floral-kismet.png" alt="Reference: 1930s floral kismet invitation"><figcaption>Reference</figcaption></figure>
+      <figure><div class="pv"><iframe src="kismet/index.html" title="Kismet theme preview" scrolling="no" tabindex="-1"></iframe></div><figcaption>Theme</figcaption></figure>
+    </div>
+    <a class="open" href="kismet/index.html">Open theme</a>
+  </div>
+
+</div>
+<script>
+// scale the 375px-wide iframe previews to fit their tiles
+function fitPreviews(){
+  document.querySelectorAll('.pv').forEach(function(pv){
+    var f = pv.querySelector('iframe');
+    if(f) f.style.transform = 'scale(' + (pv.clientWidth / 375) + ')';
+  });
+}
+addEventListener('resize', fitPreviews);
+addEventListener('load', fitPreviews);
+fitPreviews();
+</script>
+</body>
+</html>

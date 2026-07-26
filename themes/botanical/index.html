@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vintage Botanical — Storybook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage:#b7c1a9;
+  --sage-deep:#9aa98c;
+  --parchment:#efe8d2;
+  --ink:#49523c;
+  --ink-soft:#5c6549;
+  --pink:#c793ab;
+  --pink-light:#dbb3c6;
+  --green:#7d9367;
+  --green-deep:#5f7a4e;
+  --bloom:#f2eedd;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#4b4438,#2e2a22);
+  padding:clamp(12px,4vw,48px);
+  font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  color:var(--ink);
+}
+.card{
+  position:relative;
+  width:min(430px,100%);
+  aspect-ratio:362/513;
+  min-height:540px;
+  min-width:0; /* flex item: stop aspect-ratio+min-height transferring a min width wider than small phones */
+  background:var(--sage);
+  background-image:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.28), transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(0,0,0,.08), transparent 55%);
+  border-radius:14px;
+  box-shadow:0 25px 60px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+.scene{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+.panel{
+  position:absolute;
+  left:50%;
+  top:10.5%;
+  transform:translateX(-50%);
+  width:46%;
+  min-width:150px;
+  bottom:23.5%;
+  background:var(--parchment);
+  border:1px solid var(--ink-soft);
+  box-shadow:0 4px 14px rgba(40,50,30,.25);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:6% 4%;
+  gap:.2em;
+  z-index:2;
+}
+.panel::before,.panel::after{
+  content:"";
+  position:absolute;
+  left:6px;right:6px;
+  height:6px;
+  border-left:1px solid var(--ink-soft);
+  border-right:1px solid var(--ink-soft);
+  background:var(--parchment);
+}
+.panel::before{top:-7px;border-top:1px solid var(--ink-soft)}
+.panel::after{bottom:-7px;border-bottom:1px solid var(--ink-soft)}
+.eyebrow{
+  font-size:clamp(.56rem,2.4vw,.68rem);
+  letter-spacing:.28em;
+  text-indent:.28em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.small{
+  font-style:italic;
+  font-size:clamp(.68rem,2.9vw,.82rem);
+  letter-spacing:.03em;
+}
+.name-script{
+  font-family:"Tangerine","Snell Roundhand","Apple Chancery",cursive;
+  font-size:clamp(1.7rem,7vw,2.2rem);
+  font-weight:700;
+  line-height:.8;
+  margin-top:.15em;
+  color:#414a35;
+}
+.name-caps{
+  font-size:clamp(.62rem,2.7vw,.76rem);
+  letter-spacing:.3em;
+  text-indent:.3em;
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:.4em;
+}
+.amp{
+  font-family:"Tangerine",cursive;
+  font-size:clamp(1.3rem,5.5vw,1.7rem);
+  font-weight:700;
+  line-height:.8;
+  margin:.05em 0 .3em;
+}
+.amp::before{content:"– ";font-family:"Cormorant Garamond",serif;font-size:.55em;vertical-align:.25em}
+.amp::after{content:" –";font-family:"Cormorant Garamond",serif;font-size:.55em;vertical-align:.25em}
+.invite-line{
+  font-style:italic;
+  font-size:clamp(.66rem,2.9vw,.8rem);
+  margin:.4em 0 .3em;
+}
+.date-script{
+  font-family:"Tangerine",cursive;
+  font-size:clamp(1.35rem,5.8vw,1.75rem);
+  font-weight:700;
+  line-height:.78;
+  color:#414a35;
+}
+.time{
+  font-style:italic;
+  font-size:clamp(.66rem,2.9vw,.8rem);
+  margin-top:.35em;
+}
+.year{
+  font-size:clamp(.9rem,3.8vw,1.05rem);
+  letter-spacing:.22em;
+  text-indent:.22em;
+  margin-top:.4em;
+  font-weight:500;
+}
+.flourish{width:55%;max-width:90px;color:var(--ink-soft);margin-top:.2em}
+.banner{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  text-align:center;
+  color:var(--ink);
+}
+.banner .ribbon{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+.banner-main{
+  bottom:13.5%;
+  width:84%;
+  padding:.55em 1em .6em;
+  font-size:clamp(.66rem,2.9vw,.8rem);
+  letter-spacing:.12em;
+  font-weight:500;
+}
+.banner-sub{
+  bottom:6.5%;
+  width:58%;
+  padding:.45em 1em .55em;
+  font-style:italic;
+  font-size:clamp(.64rem,2.8vw,.78rem);
+  letter-spacing:.08em;
+}
+@media (max-width:420px){
+  .panel{width:52%;top:12%;bottom:27%}
+}
+</style>
+</head>
+<body>
+<main class="card" aria-label="Wedding invitation">
+
+  <!-- illustrated garden scene -->
+  <svg class="scene" viewBox="0 0 362 513" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <g id="bloomcluster">
+        <circle cx="0" cy="0" r="7" fill="#f2eedd"/>
+        <circle cx="9" cy="-4" r="6" fill="#ece6cf"/>
+        <circle cx="-9" cy="-3" r="6" fill="#f5f1e2"/>
+        <circle cx="4" cy="-9" r="5.5" fill="#f2eedd"/>
+        <circle cx="-4" cy="6" r="5" fill="#e8e2ca"/>
+        <circle cx="11" cy="4" r="4.5" fill="#f2eedd"/>
+      </g>
+      <g id="stalk">
+        <path d="M0 0 C -2 -30 -1 -60 0 -88" stroke="#5f7a4e" stroke-width="2" fill="none"/>
+        <path d="M0 -18 C -10 -22 -16 -30 -17 -40 C -8 -36 -2 -28 0 -18Z" fill="#6f8a5c"/>
+        <path d="M0 -34 C 10 -38 16 -46 17 -56 C 8 -52 2 -44 0 -34Z" fill="#7d9367"/>
+        <ellipse cx="-3" cy="-62" rx="4.5" ry="7" fill="#c793ab"/>
+        <ellipse cx="4" cy="-72" rx="4" ry="6.5" fill="#dbb3c6"/>
+        <ellipse cx="-2" cy="-82" rx="3.5" ry="6" fill="#c793ab"/>
+        <ellipse cx="2" cy="-90" rx="3" ry="5" fill="#dbb3c6"/>
+      </g>
+      <g id="iris">
+        <path d="M0 0 C -1 -25 -1 -50 0 -70" stroke="#5f7a4e" stroke-width="2" fill="none"/>
+        <path d="M0 -12 C -12 -16 -18 -26 -19 -38 C -9 -33 -2 -24 0 -12Z" fill="#7d9367"/>
+        <path d="M0 -26 C 12 -30 18 -40 19 -52 C 9 -47 2 -38 0 -26Z" fill="#6f8a5c"/>
+        <path d="M0 -70 C -7 -74 -10 -82 -8 -90 C -3 -85 0 -78 0 -70 C 3 -78 6 -85 10 -90 C 11 -81 7 -74 0 -70Z" fill="#b884a0"/>
+        <ellipse cx="0" cy="-72" rx="3.5" ry="6" fill="#dbb3c6"/>
+      </g>
+    </defs>
+
+    <!-- soft border wash -->
+    <rect x="0" y="0" width="362" height="513" fill="#b7c1a9"/>
+    <rect x="10" y="10" width="342" height="493" fill="none" stroke="#8b9a7c" stroke-width="1.2" rx="6"/>
+
+    <!-- distant hedge / sky glade -->
+    <ellipse cx="181" cy="190" rx="150" ry="120" fill="#cfd8c0"/>
+    <ellipse cx="181" cy="205" rx="140" ry="100" fill="#a9c0d8" opacity=".55"/>
+    <ellipse cx="120" cy="240" rx="90" ry="70" fill="#8aa171"/>
+    <ellipse cx="245" cy="235" rx="95" ry="75" fill="#7d9367"/>
+    <ellipse cx="181" cy="280" rx="150" ry="80" fill="#93a97e"/>
+
+    <!-- arching trees -->
+    <path d="M60 430 C 55 300 50 190 65 120 C 72 90 90 70 120 60" stroke="#6b6248" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M302 430 C 307 300 312 190 297 120 C 290 90 272 70 242 60" stroke="#6b6248" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M65 120 C 80 105 95 95 115 88" stroke="#6b6248" stroke-width="4" fill="none"/>
+    <path d="M297 120 C 282 105 267 95 247 88" stroke="#6b6248" stroke-width="4" fill="none"/>
+
+    <!-- canopy of white blossom -->
+    <g>
+      <use href="#bloomcluster" transform="translate(50,52)"/>
+      <use href="#bloomcluster" transform="translate(80,38) scale(1.2)"/>
+      <use href="#bloomcluster" transform="translate(115,30) scale(1.3)"/>
+      <use href="#bloomcluster" transform="translate(150,26) scale(1.15)"/>
+      <use href="#bloomcluster" transform="translate(181,30) scale(1.35)"/>
+      <use href="#bloomcluster" transform="translate(212,26) scale(1.15)"/>
+      <use href="#bloomcluster" transform="translate(247,30) scale(1.3)"/>
+      <use href="#bloomcluster" transform="translate(282,38) scale(1.2)"/>
+      <use href="#bloomcluster" transform="translate(312,52)"/>
+      <use href="#bloomcluster" transform="translate(65,72) scale(.9)"/>
+      <use href="#bloomcluster" transform="translate(100,58)"/>
+      <use href="#bloomcluster" transform="translate(140,50) scale(1.1)"/>
+      <use href="#bloomcluster" transform="translate(181,55) scale(1.05)"/>
+      <use href="#bloomcluster" transform="translate(222,50) scale(1.1)"/>
+      <use href="#bloomcluster" transform="translate(262,58)"/>
+      <use href="#bloomcluster" transform="translate(297,72) scale(.9)"/>
+      <use href="#bloomcluster" transform="translate(35,80) scale(.8)"/>
+      <use href="#bloomcluster" transform="translate(327,80) scale(.8)"/>
+    </g>
+
+    <!-- flower beds: left -->
+    <g>
+      <use href="#stalk" transform="translate(38,420)"/>
+      <use href="#iris" transform="translate(58,430) scale(1.1)"/>
+      <use href="#stalk" transform="translate(78,425) scale(.92)"/>
+      <use href="#iris" transform="translate(95,432) scale(.85)"/>
+      <use href="#stalk" transform="translate(28,432) scale(.8)"/>
+      <use href="#iris" transform="translate(115,435) scale(.7)"/>
+    </g>
+    <!-- flower beds: right -->
+    <g>
+      <use href="#iris" transform="translate(304,420)"/>
+      <use href="#stalk" transform="translate(322,428) scale(1.05)"/>
+      <use href="#iris" transform="translate(285,428) scale(.9)"/>
+      <use href="#stalk" transform="translate(268,433) scale(.8)"/>
+      <use href="#stalk" transform="translate(338,430) scale(.85)"/>
+      <use href="#iris" transform="translate(250,436) scale(.68)"/>
+    </g>
+
+    <!-- grass fringe -->
+    <g stroke="#5f7a4e" stroke-width="1.6" fill="none" stroke-linecap="round">
+      <path d="M20 440 q4 -18 2 -30"/><path d="M30 442 q6 -16 10 -26"/>
+      <path d="M130 440 q2 -14 -2 -24"/><path d="M145 441 q5 -12 9 -20"/>
+      <path d="M220 441 q-3 -14 1 -24"/><path d="M235 440 q4 -12 2 -22"/>
+      <path d="M332 442 q-5 -16 -9 -26"/><path d="M344 440 q-3 -18 -1 -30"/>
+    </g>
+    <rect x="0" y="438" width="362" height="75" fill="#a5b295"/>
+    <path d="M0 440 Q 90 432 181 440 T 362 438 L 362 513 L 0 513 Z" fill="#9aa98c"/>
+  </svg>
+
+  <!-- central parchment panel -->
+  <section class="panel">
+    <p class="eyebrow">Together</p>
+    <p class="small">with their families</p>
+    <h1 class="name-script">Lorem</h1>
+    <p class="name-caps">Ipsumson</p>
+    <p class="amp">&amp;</p>
+    <h1 class="name-script">Dolor</h1>
+    <p class="name-caps">Ametson</p>
+    <p class="invite-line">invite you to their wedding</p>
+    <p class="date-script">Saturday</p>
+    <p class="date-script">the fourteenth</p>
+    <p class="date-script">of June</p>
+    <p class="time">six o&rsquo;clock</p>
+    <p class="year">2026</p>
+    <svg class="flourish" viewBox="0 0 90 14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M4 7 C 20 1 34 1 45 7 C 56 13 70 13 86 7"/>
+      <circle cx="45" cy="7" r="1.6" fill="currentColor"/>
+    </svg>
+  </section>
+
+  <!-- location ribbon -->
+  <div class="banner banner-main">
+    <svg class="ribbon" viewBox="0 0 300 34" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M20 4 L280 4 C 286 12 286 22 280 30 L20 30 C 14 22 14 12 20 4 Z" fill="#efe8d2" stroke="#5c6549" stroke-width="1.2"/>
+      <path d="M20 4 C 10 6 4 10 2 17 C 4 24 10 28 20 30 C 14 22 14 12 20 4 Z" fill="#ddd4b8" stroke="#5c6549" stroke-width="1.2"/>
+      <path d="M280 4 C 290 6 296 10 298 17 C 296 24 290 28 280 30 C 286 22 286 12 280 4 Z" fill="#ddd4b8" stroke="#5c6549" stroke-width="1.2"/>
+    </svg>
+    Rhubarbum &ndash; Consectetur, Elitshire
+  </div>
+
+  <div class="banner banner-sub">
+    <svg class="ribbon" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M18 3 L182 3 C 187 10 187 19 182 26 L18 26 C 13 19 13 10 18 3 Z" fill="#efe8d2" stroke="#5c6549" stroke-width="1.2"/>
+      <path d="M18 3 C 8 8 3 12 6 22 L 18 26 C 13 19 13 10 18 3 Z" fill="#ddd4b8" stroke="#5c6549" stroke-width="1.2"/>
+      <path d="M182 3 C 192 8 197 12 194 22 L 182 26 C 187 19 187 10 182 3 Z" fill="#ddd4b8" stroke="#5c6549" stroke-width="1.2"/>
+    </svg>
+    Merriment to follow
+  </div>
+</main>
+</body>
+</html>

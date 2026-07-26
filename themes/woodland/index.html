@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woodland — Rustic Trees</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+:root{
+  --card:#f5f0df;
+  --ink:#463722;
+  --line:#5d4a30;
+  --gold:#b5762a;
+  --gold-dark:#8f5a1d;
+  --rust:#7a4a26;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#464032,#2c2921);
+  padding:clamp(12px,4vw,48px);
+  font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  color:var(--ink);
+}
+.card{
+  position:relative;
+  width:min(430px,100%);
+  aspect-ratio:292/407;
+  min-height:520px;
+  min-width:0; /* flex item: stop aspect-ratio+min-height transferring a min width wider than small phones */
+  background:var(--card);
+  background-image:radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.35), rgba(0,0,0,.045) 90%);
+  border-radius:12px;
+  box-shadow:0 25px 60px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+@supports not (aspect-ratio: 1){
+  .card{min-height:600px}
+}
+.frame{
+  position:absolute;
+  inset:8.5% 12%;
+  border:1.2px solid #4f3d27;
+  pointer-events:none;
+  z-index:1;
+}
+.frame::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:1px solid rgba(93,74,48,.4);
+}
+svg.branch{
+  position:absolute;
+  width:50%;
+  height:auto;
+  pointer-events:none;
+  z-index:1;
+}
+.branch.tr{top:-2%;right:-2.5%}
+.branch.bl{bottom:-2%;left:-2.5%;transform:rotate(180deg)}
+.content{
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14% 18%;
+  gap:.35em;
+}
+.eyebrow{
+  font-size:clamp(.6rem,2.6vw,.72rem);
+  letter-spacing:.34em;
+  text-indent:.34em;
+  text-transform:uppercase;
+  line-height:2;
+  font-weight:500;
+}
+.of{
+  font-size:clamp(.6rem,2.6vw,.7rem);
+  letter-spacing:.4em;
+  text-indent:.4em;
+  text-transform:uppercase;
+  margin:.4em 0 .5em;
+}
+.of::before{content:"– "}
+.of::after{content:" –"}
+.names{
+  font-family:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  font-size:clamp(1.7rem,7.5vw,2.15rem);
+  font-weight:400;
+  line-height:1.25;
+  color:#3f321f;
+}
+.amp{
+  font-family:"Pinyon Script",cursive;
+  font-size:clamp(1.2rem,5vw,1.5rem);
+  margin:.1em 0;
+}
+.amp::before{content:"– "; font-family:"Cormorant Garamond",serif; font-size:.7em; vertical-align:.2em}
+.amp::after{content:" –"; font-family:"Cormorant Garamond",serif; font-size:.7em; vertical-align:.2em}
+.day{
+  margin-top:1.2em;
+  font-size:clamp(.62rem,2.7vw,.74rem);
+  letter-spacing:.42em;
+  text-indent:.42em;
+  text-transform:uppercase;
+  font-weight:500;
+}
+.sprig{width:34%;max-width:110px;margin:.65em 0;color:var(--gold)}
+.month{
+  font-family:"Pinyon Script",cursive;
+  font-size:clamp(1.25rem,5.4vw,1.55rem);
+}
+.daynum{
+  font-size:clamp(1.05rem,4.6vw,1.3rem);
+  letter-spacing:.12em;
+  display:flex;align-items:center;gap:.55em;
+  margin:.15em 0;
+}
+.daynum::before,.daynum::after{
+  content:"··";
+  color:var(--gold);
+  font-size:.7em;
+  letter-spacing:.15em;
+}
+.year{
+  font-size:clamp(1.15rem,5vw,1.45rem);
+  letter-spacing:.18em;
+  text-indent:.18em;
+}
+.city{
+  font-size:clamp(.6rem,2.6vw,.7rem);
+  letter-spacing:.34em;
+  text-indent:.34em;
+  text-transform:uppercase;
+  margin-top:.5em;
+  font-weight:500;
+}
+.follow{
+  font-style:italic;
+  font-size:clamp(.78rem,3.4vw,.92rem);
+  margin-top:1.4em;
+  letter-spacing:.04em;
+}
+@media (max-width:420px){
+  .frame{inset:7% 8%}
+  .content{padding:16% 14%}
+}
+</style>
+</head>
+<body>
+<main class="card" aria-label="Save the date">
+
+  <div class="frame" aria-hidden="true"></div>
+
+  <!-- shared defs: leaf + leafy frond + full corner branch -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <path id="lf" d="M0 0 C 5 -7 14 -9 21 -5 C 14 1 6 2 0 0 Z"/>
+      <g id="frond">
+        <path d="M0 0 C 28 -4 58 -4 86 3" stroke="#6b4a24" stroke-width="2" fill="none"/>
+        <use href="#lf" fill="#b5762a" transform="translate(10,-2) rotate(-42)"/>
+        <use href="#lf" fill="#8f5a1d" transform="translate(24,-4) rotate(-30) scale(.95)"/>
+        <use href="#lf" fill="#c98a2b" transform="translate(40,-5) rotate(-40) scale(.9)"/>
+        <use href="#lf" fill="#8f5a1d" transform="translate(56,-5) rotate(-28) scale(.85)"/>
+        <use href="#lf" fill="#b5762a" transform="translate(70,-4) rotate(-38) scale(.78)"/>
+        <use href="#lf" fill="#c98a2b" transform="translate(82,-2) rotate(-26) scale(.66)"/>
+        <use href="#lf" fill="#8f5a1d" transform="translate(18,1) scale(1,-1) rotate(-32) scale(.9)"/>
+        <use href="#lf" fill="#b5762a" transform="translate(34,2) scale(1,-1) rotate(-40) scale(.85)"/>
+        <use href="#lf" fill="#c98a2b" transform="translate(50,2) scale(1,-1) rotate(-30) scale(.8)"/>
+        <use href="#lf" fill="#8f5a1d" transform="translate(64,3) scale(1,-1) rotate(-38) scale(.72)"/>
+        <use href="#lf" fill="#b5762a" transform="translate(78,3) scale(1,-1) rotate(-28) scale(.6)"/>
+      </g>
+      <g id="branchart">
+        <path d="M232 10 C 186 20 146 40 118 72 C 98 96 86 126 82 162"
+              fill="none" stroke="#6b4a24" stroke-width="3" stroke-linecap="round"/>
+        <use href="#frond" transform="translate(206,18) rotate(152)"/>
+        <use href="#frond" transform="translate(168,32) rotate(160) scale(1.05)"/>
+        <use href="#frond" transform="translate(134,56) rotate(128)"/>
+        <use href="#frond" transform="translate(108,86) rotate(115) scale(.95)"/>
+        <use href="#frond" transform="translate(92,120) rotate(100) scale(.9)"/>
+        <use href="#frond" transform="translate(84,155) rotate(92) scale(.8)"/>
+        <use href="#frond" transform="translate(196,26) rotate(-158) scale(.8)"/>
+      </g>
+    </defs>
+  </svg>
+
+  <svg class="branch tr" viewBox="0 0 230 230" aria-hidden="true">
+    <use href="#branchart"/>
+  </svg>
+
+  <svg class="branch bl" viewBox="0 0 230 230" aria-hidden="true">
+    <use href="#branchart"/>
+  </svg>
+
+  <div class="content">
+    <p class="eyebrow">Save the date<br>for the wedding</p>
+    <p class="of">of</p>
+    <h1 class="names">Lorem Ipsum</h1>
+    <p class="amp">&amp;</p>
+    <h1 class="names">Dolor Amet</h1>
+    <p class="day">Saturday</p>
+    <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true" fill="currentColor">
+      <circle cx="60" cy="10" r="4"/>
+      <circle cx="48" cy="12" r="3"/>
+      <circle cx="72" cy="12" r="3"/>
+      <path d="M38 13 C30 8 22 8 14 13 C22 18 30 18 38 13Z"/>
+      <path d="M82 13 C90 8 98 8 106 13 C98 18 90 18 82 13Z"/>
+      <path d="M46 17 q6 6 14 4 M74 17 q-6 6 -14 4" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    </svg>
+    <p class="month">September</p>
+    <p class="daynum">26</p>
+    <p class="year">2026</p>
+    <p class="city">Consectetur</p>
+    <p class="follow">Invitation to Follow</p>
+  </div>
+</main>
+</body>
+</html>
