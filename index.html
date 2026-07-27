@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Woodland — Zaproszenie ślubne</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-<style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zaproszenie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <style>
 :root{
   --paper:#f5f0df;
   --ink:#463722;
@@ -55,18 +55,17 @@ section{
   position:relative;
   max-width:660px;
   margin:0 auto;
-  padding:clamp(3rem,7vh,5rem) clamp(1.6rem,6vw,2rem);
+  padding:clamp(1.2rem,2.5vh,2rem) clamp(1.6rem,6vw,2rem);
   text-align:center;
 }
 .hero{
-  min-height:100svh;
   max-width:none;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:.35em;
-  padding:clamp(4rem,10vh,6rem) 1.6rem;
+  padding:clamp(4rem,10vh,6rem) 1.6rem clamp(1rem,2vh,1.4rem);
 }
 .eyebrow{
   font-size:clamp(.8rem,1.9vw,1.05rem);
@@ -86,15 +85,24 @@ section{
 .amp{
   font-family:"Pinyon Script",cursive;
   font-size:clamp(1.4rem,3.4vw,2.1rem);
+  line-height:1;
   margin:.05em 0;
 }
 .amp::before{content:"– ";font-family:"Cormorant Garamond",serif;font-size:.7em;vertical-align:.2em}
 .amp::after{content:" –";font-family:"Cormorant Garamond",serif;font-size:.7em;vertical-align:.2em}
+.people{
+  font-family:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  font-size:clamp(1.8rem,5vw,3.1rem);
+  font-weight:400;
+  line-height:1.25;
+  color:#3f321f;
+  margin:.1em 0;
+}
 .day{
   margin-top:1.6em;
-  font-size:clamp(.8rem,1.9vw,1.05rem);
-  letter-spacing:.42em;
-  text-indent:.42em;
+  font-size:clamp(1.05rem,2.4vw,1.45rem);
+  letter-spacing:.3em;
+  text-indent:.3em;
   text-transform:uppercase;
   font-weight:500;
 }
@@ -112,12 +120,6 @@ section{
   letter-spacing:.34em;text-indent:.34em;
   text-transform:uppercase;margin-top:.6em;font-weight:500;
 }
-.scroll-hint{
-  margin-top:2.5em;
-  font-style:italic;
-  font-size:clamp(.95rem,1.9vw,1.15rem);
-  opacity:.75;
-}
 h2{
   font-size:clamp(1rem,2.4vw,1.3rem);
   letter-spacing:.4em;
@@ -130,38 +132,6 @@ h2{
   font-size:clamp(1.15rem,2.3vw,1.35rem);
   margin-top:1.2em;
 }
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:clamp(1rem,2.5vw,1.6rem);
-  margin-top:2.2em;
-  text-align:center;
-}
-.dcard{
-  border:1px solid var(--line);
-  padding:1.6em 1.2em;
-  position:relative;
-  background:rgba(255,255,255,.25);
-}
-.dcard::before{
-  content:"";
-  position:absolute;
-  inset:4px;
-  border:1px solid rgba(93,74,48,.3);
-  pointer-events:none;
-}
-.dcard h3{
-  font-size:clamp(.85rem,1.9vw,1.05rem);
-  letter-spacing:.3em;
-  text-indent:.3em;
-  text-transform:uppercase;
-  font-weight:600;
-  color:var(--gold-dark);
-  margin-bottom:.7em;
-}
-.dcard p{font-size:clamp(1.05rem,2.1vw,1.2rem)}
-.dcard .t{font-family:"Pinyon Script",cursive;font-size:clamp(1.5rem,3vw,1.9rem);margin-bottom:.3em;display:block;color:#3f321f}
-/* RSVP */
 form{
   margin-top:2.2em;
   display:flex;
@@ -178,7 +148,7 @@ label{
   margin-bottom:.5em;
   color:var(--gold-dark);
 }
-input[type=text],textarea{
+input[type=text],input[type=number]{
   width:100%;
   background:transparent;
   border:0;
@@ -189,11 +159,31 @@ input[type=text],textarea{
   padding:.35em .1em;
   border-radius:0;
 }
-input[type=text]:focus,textarea:focus{outline:none;border-bottom-color:var(--gold)}
-textarea{resize:vertical;min-height:4.5em}
+input[type=text]:focus,input[type=number]:focus{outline:none;border-bottom-color:var(--gold)}
+input[type=number]{max-width:7em}
+fieldset{border:0}
+legend{
+  display:block;
+  font-size:.85rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:.5em;
+  color:var(--gold-dark);
+}
 .choices{display:flex;gap:2em;flex-wrap:wrap}
-.choices label{display:flex;align-items:center;gap:.6em;margin:0;cursor:pointer;font-weight:500}
-input[type=radio]{accent-color:var(--gold-dark);width:1em;height:1em}
+.choices label{display:flex;align-items:center;gap:.6em;margin:0;cursor:pointer;font-weight:500;
+  font-size:1.05rem;letter-spacing:.04em;text-transform:none;color:var(--ink)}
+.people-list{flex-direction:column;gap:.7em;align-items:stretch}
+.person-row{
+  display:flex;justify-content:space-between;align-items:center;gap:1em;
+  font-size:1.05rem;letter-spacing:.04em;
+}
+.person-row .pchoice{display:flex;gap:1.4em}
+.person-row.missing .pname{color:#8a2214}
+.extra{margin-top:1.2em}
+input[type=radio],input[type=checkbox]{accent-color:var(--gold-dark);width:1em;height:1em}
+#people-fieldset:disabled{opacity:.45}
 button{
   align-self:center;
   font-family:inherit;
@@ -209,6 +199,27 @@ button{
   transition:background .2s,color .2s;
 }
 button:hover{background:transparent;color:var(--gold-dark)}
+button:disabled{opacity:.55;cursor:default}
+button:disabled:hover{background:var(--gold-dark);color:var(--paper)}
+#status{
+  min-height:1.6em;
+  text-align:center;
+  font-style:italic;
+  font-size:1.05rem;
+}
+#status.error{color:#8a2214;font-style:normal}
+.confirm{
+  margin-top:2.2em;
+  font-size:1.15rem;
+  line-height:1.9;
+}
+.confirm strong{
+  display:block;
+  font-family:"Pinyon Script",cursive;
+  font-weight:400;
+  font-size:1.9rem;
+  color:#3f321f;
+}
 footer{
   position:relative;
   text-align:center;
@@ -217,7 +228,7 @@ footer{
   letter-spacing:.3em;
   text-transform:uppercase;
 }
-</style>
+  </style>
 </head>
 <body>
 
@@ -266,73 +277,40 @@ footer{
 <main>
   <section class="hero">
     <svg class="branch tr" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
-    <p class="eyebrow">Zapraszamy serdecznie<br>na uroczystość zaślubin</p>
-    <h1 class="names">Lorem Ipsum</h1>
-    <p class="amp">&amp;</p>
-    <h1 class="names">Dolor Amet</h1>
-    <p class="day">Sobota</p>
+    <h1 class="names">Sofiia Serdiuk</h1>
+    <p class="amp">oraz</p>
+    <h1 class="names">Paweł Niegowski</h1>
+    <p class="eyebrow">mają przyjemność zaprosić</p>
+    <p class="people">Ewę i Arkadiusza Niegowskich</p>
+    <p class="eyebrow">na obiad weselny</p>
     <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
-    <p class="daynum">26</p>
-    <p class="month">Września</p>
-    <p class="year">2026</p>
-    <p class="city">Consectetur</p>
-    <p class="scroll-hint">Szczegóły poniżej &darr;</p>
+    <p class="city">w Restauracji Gdańskiej<br>ul. Świętego Ducha 16/24</p>
+    <p class="day">piątek, 11 września 2026</p>
+    <p class="day">16:00</p>
   </section>
 
   <section>
-    <h2>Nasz Dzień</h2>
     <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
-    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer laoreet,
-    nulla non gravida porta, tellus augue commodo diam, at luctus enim est nec arcu.
-    Vivamus hendrerit velit at semper posuere.</p>
-    <div class="cards">
-      <div class="dcard">
-        <h3>Ceremonia</h3>
-        <span class="t">godzina 16:00</span>
-        <p>Consectetur Chapel<br>Lorem ipsum dolor sit amet, elit sed diam nonummy.</p>
-      </div>
-      <div class="dcard">
-        <h3>Przyjęcie</h3>
-        <span class="t">godzina 18:00</span>
-        <p>Curabitur Hall<br>Sed do eiusmod tempor incididunt ut labore et dolore.</p>
-      </div>
-      <div class="dcard">
-        <h3>Zabawa</h3>
-        <span class="t">do białego rana</span>
-        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-      </div>
-    </div>
-  </section>
+    <p class="lead">Prosimy o potwierdzenie przybycia do 20 sierpnia</p>
 
-  <section>
-    <h2>Potwierdź przybycie</h2>
-    <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
-    <p class="lead">Prosimy o odpowiedź do 15 września</p>
-    <form action="#" onsubmit="return false">
-      <div>
-        <label for="rname">Imię i nazwisko</label>
-        <input type="text" id="rname" name="name" autocomplete="name" placeholder="Lorem Ipsumson">
-      </div>
-      <div>
-        <label>Czy będziesz z nami?</label>
-        <div class="choices">
-          <label><input type="radio" name="attend" value="yes"> Z przyjemnością przybędę</label>
-          <label><input type="radio" name="attend" value="no"> Niestety nie przybędę</label>
+    <form id="rsvp-form">
+      <fieldset id="people-fieldset">
+        <div class="choices people-list" id="people-list"></div>
+        <div class="extra">
+          <input type="text" id="extra" name="extra" autocomplete="off" placeholder="Imię i nazwisko">
         </div>
-      </div>
-      <div>
-        <label for="rnote">Wiadomość dla Młodej Pary</label>
-        <textarea id="rnote" name="note" placeholder="Lorem ipsum dolor sit amet&hellip;"></textarea>
-      </div>
+      </fieldset>
       <button type="submit">Wyślij odpowiedź</button>
+      <div id="status" role="status"></div>
     </form>
   </section>
 </main>
 
 <footer>
   <svg class="branch bl" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
-  Lorem &amp; Dolor &mdash; 26 &middot; 09 &middot; 2026
 </footer>
 
+<script src="config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

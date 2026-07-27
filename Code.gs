@@ -13,11 +13,11 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // `people` is a single comma-delimited string of everyone this RSVP covers
   const row = [
     new Date(),
-    String(data.name ?? '').slice(0, 120),
+    String(data.people ?? '').slice(0, 300),
     data.attending === 'yes' ? 'yes' : 'no',
-    Math.min(parseInt(data.guests, 10) || 1, 6),
   ];
 
   const lock = LockService.getScriptLock();
@@ -31,7 +31,7 @@ function doPost(e) {
   // Echo back what was written — client renders its confirmation from this.
   return ContentService.createTextOutput(JSON.stringify({
     status: 'ok',
-    saved: { timestamp: row[0], name: row[1], attending: row[2], guests: row[3] },
+    saved: { timestamp: row[0], people: row[1], attending: row[2] },
   })).setMimeType(ContentService.MimeType.JSON);
 }
 

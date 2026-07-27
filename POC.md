@@ -36,8 +36,8 @@ notifications, localStorage, decline-path niceties. All after the flow is proven
 ## 2. Files
 
 ````
-poc/
-├── index.html      # form + status area, minimal inline CSS (readable on a phone, nothing more)
+./                  # repo root (moved out of poc/ once the flow was proven and themed)
+├── index.html      # RSVP page — woodland theme, Polish
 ├── app.js          # prefill, submit, confirm/error handling
 ├── config.js       # window.RSVP_ENDPOINT = '<PASTE /exec URL>';
 └── Code.gs         # NOT served — copy-paste source for the Google side

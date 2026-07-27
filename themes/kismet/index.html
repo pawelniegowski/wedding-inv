@@ -9,383 +9,458 @@
 <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Josefin+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 :root{
-  --mat:#e9e2cf;            /* outer cream mat */
-  --panel:#ece5d2;          /* inner cream panel */
-  --teal:#2e6b66;           /* scene ground/mid */
-  --teal-deep:#1e4d4b;      /* night sky */
+  --panel:#ece5d2;
+  --teal:#2e6b66;
+  --teal-deep:#1e4d4b;
   --ink:#3d3a33;
-  --deco:#3f6f5f;           /* filigree green */
+  --deco:#3f6f5f;
   --peach:#f0a377;
   --coral:#e78a67;
-  --peach-light:#f7c39b;
   --sage:#9db98a;
   --sage-light:#c6d6ac;
   --trunk:#d9b6ac;
   --moon:#e9c46a;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(160deg,#37403c,#202623);
-  padding:clamp(12px,4vw,48px);
-  font-family:"Josefin Sans","Century Gothic",Futura,"Trebuchet MS",sans-serif;
-  color:var(--ink);
-}
-.card{
-  position:relative;
-  width:min(440px,100%);
-  aspect-ratio:382/522;
-  min-height:560px;
-  min-width:0; /* flex item: stop aspect-ratio+min-height transferring a min width wider than small phones */
-  background:var(--mat);
-  border-radius:16px;
-  box-shadow:0 25px 60px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);
-  padding:3.6%;
-  overflow:hidden;
-}
-.scene-wrap{
-  position:relative;
-  width:100%;height:100%;
   background:var(--teal);
-  border:1px solid #c9a29a;
-  border-radius:6px;
+  background-image:linear-gradient(180deg,#2a625d,#2e6b66 40%,#2a615c);
+  color:var(--ink);
+  font-family:"Josefin Sans","Century Gothic",Futura,"Trebuchet MS",sans-serif;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+.hero{
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(120px,22vh,220px) clamp(1rem,4vw,2rem) clamp(90px,16vh,160px);
   overflow:hidden;
 }
-.scene{
-  position:absolute;
-  inset:0;width:100%;height:100%;
-  display:block;
-}
+.layer{position:absolute;pointer-events:none}
+.layer svg{display:block;width:100%;height:100%}
+.sky{top:0;left:0;right:0;height:clamp(140px,24vh,240px);z-index:0}
+.garland{top:0;width:clamp(110px,15vw,220px);height:min(78vh,720px);z-index:1}
+.garland.l{left:0}
+.garland.r{right:0;transform:scaleX(-1)}
+.trunk{top:0;bottom:0;width:clamp(34px,4.5vw,64px);z-index:0}
+.trunk.l{left:0}
+.trunk.r{right:0;transform:scaleX(-1)}
+.ground{bottom:0;left:0;right:0;height:clamp(70px,12vh,130px);z-index:0}
+@media (max-width:560px){ .garland{height:52vh} }
+
+/* cream deco panel, reused for hero + sections */
 .panel{
-  position:absolute;
-  left:50%;top:17%;bottom:8%;
-  transform:translateX(-50%);
-  width:65%;
+  position:relative;
+  width:min(600px,100%);
   background:var(--panel);
-  box-shadow:0 4px 16px rgba(10,40,35,.35);
+  box-shadow:0 8px 26px rgba(10,40,35,.4);
   z-index:2;
+  padding:clamp(2.4rem,5vw,3.4rem) clamp(1.3rem,4vw,2.6rem) clamp(1.8rem,4vw,2.6rem);
+  text-align:center;
 }
-.panel-border{
-  position:absolute;
-  inset:7px;
-  border:1.4px solid var(--deco);
-  pointer-events:none;
-}
-.panel-border::after{
-  content:"";
-  position:absolute;
-  inset:3px;
-  border:.8px solid rgba(63,111,95,.55);
-}
-.corner{
-  position:absolute;
-  width:26px;height:26px;
-  color:var(--deco);
-  pointer-events:none;
-}
+.panel-border{position:absolute;inset:8px;border:1.4px solid var(--deco);pointer-events:none}
+.panel-border::after{content:"";position:absolute;inset:3px;border:.8px solid rgba(63,111,95,.55)}
+.corner{position:absolute;width:26px;height:26px;color:var(--deco);pointer-events:none}
 .corner svg{display:block;width:100%;height:100%}
-.corner.tl{top:10px;left:10px}
-.corner.tr{top:10px;right:10px;transform:scaleX(-1)}
-.corner.bl{bottom:10px;left:10px;transform:scaleY(-1)}
-.corner.br{bottom:10px;right:10px;transform:scale(-1,-1)}
+.corner.tl{top:11px;left:11px}
+.corner.tr{top:11px;right:11px;transform:scaleX(-1)}
+.corner.bl{bottom:11px;left:11px;transform:scaleY(-1)}
+.corner.br{bottom:11px;right:11px;transform:scale(-1,-1)}
 .monogram{
   position:absolute;
-  top:-17px;left:50%;
+  top:-19px;left:50%;
   transform:translateX(-50%);
-  width:38px;height:38px;
-  border-radius:50%;
+  width:42px;height:42px;border-radius:50%;
   background:var(--panel);
   border:1.4px solid var(--deco);
   display:flex;align-items:center;justify-content:center;
   font-family:"Poiret One","Century Gothic",Futura,sans-serif;
-  font-size:.82rem;
-  letter-spacing:.08em;
-  color:var(--deco);
+  font-size:.9rem;letter-spacing:.08em;color:var(--deco);
   z-index:3;
 }
-.monogram::after{
-  content:"";
-  position:absolute;
-  inset:3px;
-  border-radius:50%;
-  border:.8px solid rgba(63,111,95,.55);
-}
-.panel-content{
-  position:relative;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:14% 8% 9%;
-  gap:.3em;
-  z-index:2;
-}
-.deco-divider{width:56%;max-width:120px;color:var(--deco);flex:none}
-.stars-row{width:44%;max-width:96px;color:var(--deco);flex:none;margin-top:-.2em}
-.invited{
-  font-weight:300;
-  font-size:clamp(.62rem,2.7vw,.74rem);
-  letter-spacing:.14em;
-  line-height:1.8;
-  margin-top:.4em;
-}
+.monogram::after{content:"";position:absolute;inset:3px;border-radius:50%;border:.8px solid rgba(63,111,95,.55)}
+
+.deco-divider{width:clamp(110px,16vw,150px);color:var(--deco);display:block;margin:.6em auto}
+.stars-row{width:clamp(90px,12vw,120px);color:var(--deco);display:block;margin:0 auto}
+.invited{font-weight:300;font-size:clamp(.72rem,1.5vw,.85rem);letter-spacing:.14em;line-height:1.9;margin-top:.6em}
 .names{
   font-family:"Poiret One","Century Gothic",Futura,sans-serif;
   font-weight:400;
-  font-size:clamp(1.05rem,4.7vw,1.42rem);
-  letter-spacing:.24em;
-  text-indent:.24em;
+  font-size:clamp(1.5rem,4.2vw,2.5rem);
+  letter-spacing:.22em;text-indent:.22em;
   text-transform:uppercase;
-  margin-top:.5em;
-  white-space:nowrap;
+  margin-top:.4em;
 }
-.amp{
-  font-family:"Poiret One",sans-serif;
-  font-size:clamp(.8rem,3.6vw,1rem);
-  letter-spacing:.3em;
-  text-indent:.3em;
-  margin:.15em 0;
-}
-.when{
-  font-weight:300;
-  font-size:clamp(.6rem,2.6vw,.72rem);
-  letter-spacing:.08em;
-  line-height:1.75;
-  margin-top:1em;
-}
+.amp{font-family:"Poiret One",sans-serif;font-size:clamp(1rem,2.2vw,1.4rem);letter-spacing:.3em;text-indent:.3em;margin:.1em 0}
+.when{font-weight:300;font-size:clamp(.74rem,1.6vw,.9rem);letter-spacing:.1em;line-height:1.9;margin-top:1em}
 .venue{
   font-family:"Poiret One",sans-serif;
-  font-size:clamp(.68rem,3vw,.82rem);
-  letter-spacing:.26em;
-  text-indent:.26em;
-  text-transform:uppercase;
-  margin-top:.9em;
+  font-size:clamp(.8rem,1.8vw,1rem);
+  letter-spacing:.26em;text-indent:.26em;
+  text-transform:uppercase;margin-top:.9em;
 }
-.place{
-  font-weight:300;
-  font-size:clamp(.62rem,2.7vw,.74rem);
-  letter-spacing:.12em;
-  margin-top:.25em;
-}
+.place{font-weight:300;font-size:clamp(.72rem,1.5vw,.85rem);letter-spacing:.12em;margin-top:.2em}
 .follow{
   font-family:"Poiret One",sans-serif;
-  font-size:clamp(.64rem,2.8vw,.78rem);
-  letter-spacing:.2em;
-  text-indent:.2em;
+  font-size:clamp(.72rem,1.6vw,.9rem);
+  letter-spacing:.24em;text-indent:.24em;
+  text-transform:uppercase;margin-top:.9em;
+}
+
+.sections{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(3rem,7vh,5rem);
+  padding:clamp(3rem,7vh,5rem) clamp(1rem,4vw,2rem) clamp(140px,20vh,220px);
+}
+h2{
+  font-family:"Poiret One",sans-serif;
+  font-weight:400;
+  font-size:clamp(1rem,2.2vw,1.3rem);
+  letter-spacing:.32em;text-indent:.32em;
   text-transform:uppercase;
-  margin-top:.9em;
-  white-space:nowrap;
 }
-@media (max-width:420px){
-  .panel{width:68%}
-  .names{letter-spacing:.18em;text-indent:.18em}
+.lead{font-weight:300;font-size:clamp(.8rem,1.7vw,.95rem);letter-spacing:.06em}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(135px,1fr));
+  gap:clamp(.9rem,2vw,1.4rem);
+  margin-top:1.6em;
 }
+.dcard{border:1px solid var(--deco);padding:1.4em 1em;position:relative}
+.dcard::before{content:"";position:absolute;inset:3px;border:.8px solid rgba(63,111,95,.4);pointer-events:none}
+.dcard h3{
+  font-family:"Poiret One",sans-serif;font-weight:400;
+  font-size:clamp(.72rem,1.6vw,.85rem);
+  letter-spacing:.26em;text-indent:.26em;
+  text-transform:uppercase;color:var(--deco);
+  margin-bottom:.6em;
+}
+.dcard .t{font-family:"Poiret One",sans-serif;font-size:clamp(.95rem,2vw,1.15rem);letter-spacing:.12em;display:block;margin-bottom:.4em}
+.dcard p{font-weight:300;font-size:clamp(.74rem,1.6vw,.86rem);letter-spacing:.05em}
+form{margin-top:1.6em;display:flex;flex-direction:column;gap:1.5em;text-align:left}
+label{
+  display:block;
+  font-family:"Poiret One",sans-serif;
+  font-size:.72rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--deco);
+  margin-bottom:.45em;
+}
+input[type=text],textarea{
+  width:100%;background:transparent;border:0;
+  border-bottom:1px solid var(--deco);
+  font-family:"Josefin Sans",sans-serif;font-weight:300;
+  font-size:.95rem;color:var(--ink);letter-spacing:.05em;
+  padding:.4em .1em;border-radius:0;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-bottom-width:2px}
+textarea{resize:vertical;min-height:4.5em}
+.choices{display:flex;gap:2em;flex-wrap:wrap}
+.choices label{display:flex;align-items:center;gap:.6em;margin:0;cursor:pointer;text-transform:none;letter-spacing:.08em;font-family:"Josefin Sans",sans-serif;font-size:.85rem;color:var(--ink)}
+input[type=radio]{accent-color:var(--deco);width:1em;height:1em}
+button{
+  align-self:center;
+  font-family:"Poiret One",sans-serif;
+  font-size:.85rem;letter-spacing:.3em;text-indent:.3em;
+  text-transform:uppercase;
+  color:var(--panel);background:var(--deco);
+  border:1px solid var(--deco);
+  padding:.9em 2.6em;cursor:pointer;
+  transition:background .2s,color .2s;
+}
+button:hover{background:transparent;color:var(--deco)}
+footer{
+  position:relative;
+  margin-top:calc(-1 * clamp(120px,18vh,200px));
+  padding:0 1rem clamp(20px,4vh,40px);
+  text-align:center;
+  color:#d7e2d0;
+  font-family:"Poiret One",sans-serif;
+  font-size:.78rem;letter-spacing:.3em;
+  z-index:1;
+}
+footer .ground-static{position:absolute;left:0;right:0;bottom:0;height:clamp(80px,14vh,140px);z-index:-1}
+footer .ground-static svg{display:block;width:100%;height:100%}
 </style>
 </head>
 <body>
-<main class="card" aria-label="Wedding invitation">
-  <div class="scene-wrap">
 
-    <svg class="scene" viewBox="0 0 360 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <g id="rose">
-          <circle cx="0" cy="0" r="7.5" fill="#f0a377"/>
-          <path d="M-4 -2 A 4.5 4.5 0 1 1 3 3" stroke="#cf6f4d" stroke-width="1.6" fill="none"/>
-          <circle cx="0" cy="0" r="2" fill="#e78a67"/>
-        </g>
-        <g id="rosecluster">
-          <use href="#rose" transform="translate(0,0)"/>
-          <use href="#rose" transform="translate(11,7) scale(.8)"/>
-          <use href="#rose" transform="translate(-9,8) scale(.75)"/>
-          <ellipse cx="9" cy="-7" rx="4" ry="2.4" fill="#9db98a" transform="rotate(-30 9 -7)"/>
-          <ellipse cx="-8" cy="-6" rx="4" ry="2.4" fill="#7fa06c" transform="rotate(30 -8 -6)"/>
-          <ellipse cx="2" cy="13" rx="4" ry="2.2" fill="#9db98a" transform="rotate(70 2 13)"/>
-        </g>
-        <g id="willow">
-          <path d="M0 0 C 4 22 4 44 0 66 C 0 88 2 96 6 104" stroke="#8aa877" stroke-width="1.6" fill="none"/>
-          <g fill="#9db98a">
-            <ellipse cx="2" cy="10" rx="2" ry="5" transform="rotate(12 2 10)"/>
-            <ellipse cx="4" cy="24" rx="2" ry="5" transform="rotate(8 4 24)"/>
-            <ellipse cx="4" cy="38" rx="2" ry="5"/>
-            <ellipse cx="3" cy="52" rx="2" ry="5" transform="rotate(-6 3 52)"/>
-            <ellipse cx="1" cy="66" rx="2" ry="5" transform="rotate(-8 1 66)"/>
-            <ellipse cx="1" cy="80" rx="2" ry="5" transform="rotate(-4 1 80)"/>
-            <ellipse cx="3" cy="94" rx="2" ry="5" transform="rotate(6 3 94)"/>
-          </g>
-          <g fill="#c6d6ac">
-            <ellipse cx="-2" cy="17" rx="1.8" ry="4.4" transform="rotate(-14 -2 17)"/>
-            <ellipse cx="-1" cy="31" rx="1.8" ry="4.4" transform="rotate(-10 -1 31)"/>
-            <ellipse cx="-2" cy="45" rx="1.8" ry="4.4" transform="rotate(-12 -2 45)"/>
-            <ellipse cx="-2" cy="59" rx="1.8" ry="4.4" transform="rotate(-14 -2 59)"/>
-            <ellipse cx="-3" cy="73" rx="1.8" ry="4.4" transform="rotate(-10 -3 73)"/>
-            <ellipse cx="-1" cy="87" rx="1.8" ry="4.4" transform="rotate(-8 -1 87)"/>
-          </g>
-        </g>
-        <g id="star4" fill="#e9c46a">
-          <path d="M0 -4 L 1 -1 L 4 0 L 1 1 L 0 4 L -1 1 L -4 0 L -1 -1 Z"/>
-        </g>
-        <g id="tuft" stroke="#1e4d4b" stroke-width="1.4" fill="none" stroke-linecap="round">
-          <path d="M0 0 q-2 -8 -5 -12"/>
-          <path d="M0 0 q0 -9 1 -14"/>
-          <path d="M0 0 q3 -8 6 -11"/>
-        </g>
-      </defs>
-
-      <!-- teal base -->
-      <rect width="360" height="500" fill="#2e6b66"/>
-
-      <!-- night sky -->
-      <path d="M0 0 H360 V118 C 300 138 250 146 180 146 C 110 146 60 138 0 118 Z" fill="#1e4d4b"/>
-
-      <!-- moon + stars (crescent = gold disc overlapped by sky-coloured disc) -->
-      <circle cx="172" cy="42" r="25" fill="#e9c46a"/>
-      <circle cx="184" cy="33" r="24" fill="#1e4d4b"/>
-      <use href="#star4" transform="translate(216,26)"/>
-      <use href="#star4" transform="translate(238,52) scale(.8)"/>
-      <use href="#star4" transform="translate(140,60) scale(.75)"/>
-      <use href="#star4" transform="translate(122,26) scale(.9)"/>
-      <use href="#star4" transform="translate(258,24) scale(.7)"/>
-      <use href="#star4" transform="translate(180,84) scale(.65)"/>
-      <use href="#star4" transform="translate(100,88) scale(.6)"/>
-      <use href="#star4" transform="translate(260,88) scale(.6)"/>
-
-      <!-- birch trunks far edges -->
-      <g fill="#d9b6ac">
-        <path d="M14 500 C 8 380 10 240 20 140 C 22 120 26 104 34 92 L 46 92 C 38 108 34 124 32 144 C 24 244 24 380 30 500 Z"/>
-        <path d="M346 500 C 352 380 350 240 340 140 C 338 120 334 104 326 92 L 314 92 C 322 108 326 124 328 144 C 336 244 336 380 330 500 Z"/>
+<!-- shared defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="rose">
+      <circle cx="0" cy="0" r="7.5" fill="#f0a377"/>
+      <path d="M-4 -2 A 4.5 4.5 0 1 1 3 3" stroke="#cf6f4d" stroke-width="1.6" fill="none"/>
+      <circle cx="0" cy="0" r="2" fill="#e78a67"/>
+    </g>
+    <g id="rosecluster">
+      <use href="#rose" transform="translate(0,0)"/>
+      <use href="#rose" transform="translate(11,7) scale(.8)"/>
+      <use href="#rose" transform="translate(-9,8) scale(.75)"/>
+      <ellipse cx="9" cy="-7" rx="4" ry="2.4" fill="#9db98a" transform="rotate(-30 9 -7)"/>
+      <ellipse cx="-8" cy="-6" rx="4" ry="2.4" fill="#7fa06c" transform="rotate(30 -8 -6)"/>
+      <ellipse cx="2" cy="13" rx="4" ry="2.2" fill="#9db98a" transform="rotate(70 2 13)"/>
+    </g>
+    <g id="willow">
+      <path d="M0 0 C 4 22 4 44 0 66 C 0 88 2 96 6 104" stroke="#8aa877" stroke-width="1.6" fill="none"/>
+      <g fill="#9db98a">
+        <ellipse cx="2" cy="10" rx="2" ry="5" transform="rotate(12 2 10)"/>
+        <ellipse cx="4" cy="24" rx="2" ry="5" transform="rotate(8 4 24)"/>
+        <ellipse cx="4" cy="38" rx="2" ry="5"/>
+        <ellipse cx="3" cy="52" rx="2" ry="5" transform="rotate(-6 3 52)"/>
+        <ellipse cx="1" cy="66" rx="2" ry="5" transform="rotate(-8 1 66)"/>
+        <ellipse cx="1" cy="80" rx="2" ry="5" transform="rotate(-4 1 80)"/>
+        <ellipse cx="3" cy="94" rx="2" ry="5" transform="rotate(6 3 94)"/>
       </g>
-      <g stroke="#b08e86" stroke-width="2" stroke-linecap="round">
-        <path d="M22 200 h10"/><path d="M20 280 h9"/><path d="M24 360 h9"/>
-        <path d="M330 210 h10"/><path d="M333 290 h9"/><path d="M328 372 h9"/>
+      <g fill="#c6d6ac">
+        <ellipse cx="-2" cy="17" rx="1.8" ry="4.4" transform="rotate(-14 -2 17)"/>
+        <ellipse cx="-1" cy="31" rx="1.8" ry="4.4" transform="rotate(-10 -1 31)"/>
+        <ellipse cx="-2" cy="45" rx="1.8" ry="4.4" transform="rotate(-12 -2 45)"/>
+        <ellipse cx="-2" cy="59" rx="1.8" ry="4.4" transform="rotate(-14 -2 59)"/>
+        <ellipse cx="-3" cy="73" rx="1.8" ry="4.4" transform="rotate(-10 -3 73)"/>
+        <ellipse cx="-1" cy="87" rx="1.8" ry="4.4" transform="rotate(-8 -1 87)"/>
       </g>
-
-      <!-- willow canopy fronds -->
-      <g>
-        <use href="#willow" transform="translate(60,96)"/>
-        <use href="#willow" transform="translate(84,102) scale(.9)"/>
-        <use href="#willow" transform="translate(104,96) scale(1.05)"/>
-        <use href="#willow" transform="translate(128,104) scale(.8)"/>
-        <use href="#willow" transform="translate(296,96) scale(-1,1)"/>
-        <use href="#willow" transform="translate(272,102) scale(-.9,.9)"/>
-        <use href="#willow" transform="translate(252,96) scale(-1.05,1.05)"/>
-        <use href="#willow" transform="translate(228,104) scale(-.8,.8)"/>
-        <use href="#willow" transform="translate(160,100) scale(.7)"/>
-        <use href="#willow" transform="translate(198,100) scale(-.7,.7)"/>
-      </g>
-
-      <!-- rose garlands: top corners flowing down the sides -->
-      <g>
-        <use href="#rosecluster" transform="translate(34,26)"/>
-        <use href="#rosecluster" transform="translate(64,16) scale(.9)"/>
-        <use href="#rosecluster" transform="translate(94,28) scale(1.05)"/>
-        <use href="#rosecluster" transform="translate(120,14) scale(.8)"/>
-        <use href="#rosecluster" transform="translate(30,60) scale(.95)"/>
-        <use href="#rosecluster" transform="translate(52,90) scale(.85)"/>
-        <use href="#rosecluster" transform="translate(34,124) scale(.9)"/>
-        <use href="#rosecluster" transform="translate(52,160) scale(.75)"/>
-        <use href="#rosecluster" transform="translate(36,196) scale(.85)"/>
-        <use href="#rosecluster" transform="translate(50,234) scale(.7)"/>
-        <use href="#rosecluster" transform="translate(36,270) scale(.8)"/>
-        <use href="#rosecluster" transform="translate(48,308) scale(.65)"/>
-        <use href="#rosecluster" transform="translate(326,26) scale(-1,1)"/>
-        <use href="#rosecluster" transform="translate(296,16) scale(-.9,.9)"/>
-        <use href="#rosecluster" transform="translate(266,28) scale(-1.05,1.05)"/>
-        <use href="#rosecluster" transform="translate(240,14) scale(-.8,.8)"/>
-        <use href="#rosecluster" transform="translate(330,60) scale(-.95,.95)"/>
-        <use href="#rosecluster" transform="translate(308,90) scale(-.85,.85)"/>
-        <use href="#rosecluster" transform="translate(326,124) scale(-.9,.9)"/>
-        <use href="#rosecluster" transform="translate(308,160) scale(-.75,.75)"/>
-        <use href="#rosecluster" transform="translate(324,196) scale(-.85,.85)"/>
-        <use href="#rosecluster" transform="translate(310,234) scale(-.7,.7)"/>
-        <use href="#rosecluster" transform="translate(324,270) scale(-.8,.8)"/>
-        <use href="#rosecluster" transform="translate(312,308) scale(-.65,.65)"/>
-        <use href="#rosecluster" transform="translate(156,20) scale(.7)"/>
-        <use href="#rosecluster" transform="translate(204,20) scale(-.7,.7)"/>
-        <use href="#rosecluster" transform="translate(180,34) scale(.6)"/>
-      </g>
-
-      <!-- meadow floor -->
-      <path d="M0 452 C 60 440 120 446 180 452 C 240 458 300 444 360 450 L 360 500 L 0 500 Z" fill="#255c57"/>
-      <g>
-        <use href="#tuft" transform="translate(60,486)"/>
-        <use href="#tuft" transform="translate(130,492)"/>
-        <use href="#tuft" transform="translate(230,488)"/>
-        <use href="#tuft" transform="translate(300,494)"/>
-      </g>
+    </g>
+    <g id="star4" fill="#e9c46a">
+      <path d="M0 -4 L 1 -1 L 4 0 L 1 1 L 0 4 L -1 1 L -4 0 L -1 -1 Z"/>
+    </g>
+    <g id="tuft" stroke="#1e4d4b" stroke-width="1.4" fill="none" stroke-linecap="round">
+      <path d="M0 0 q-2 -8 -5 -12"/>
+      <path d="M0 0 q0 -9 1 -14"/>
+      <path d="M0 0 q3 -8 6 -11"/>
+    </g>
+    <g id="cornerart">
+      <path d="M2 24 C 2 12 12 2 24 2" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M6 24 C 6 14 14 6 24 6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M10 20 C 14 20 17 17 17 13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+    </g>
+    <g id="dividerart" fill="none" stroke="currentColor" stroke-width="1.1">
+      <path d="M4 8 C 16 2 26 2 34 8 C 40 12 46 12 52 8"/>
+      <path d="M116 8 C 104 2 94 2 86 8 C 80 12 74 12 68 8"/>
+      <circle cx="60" cy="8" r="2.4"/>
+      <circle cx="60" cy="8" r="4.6" opacity=".55"/>
+    </g>
+    <g id="starsrowart" fill="currentColor">
+      <circle cx="8" cy="6" r="1"/><path d="M24 2 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1Z"/>
+      <circle cx="40" cy="4" r="1"/><path d="M48 1 l1.2 3.3 3.3 1.2 -3.3 1.2 -1.2 3.3 -1.2 -3.3 -3.3 -1.2 3.3 -1.2Z"/>
+      <circle cx="56" cy="4" r="1"/><path d="M72 2 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1Z"/>
+      <circle cx="88" cy="6" r="1"/>
+    </g>
+    <g id="groundart">
+      <path d="M0 40 C 120 28 240 34 360 40 C 520 48 700 30 900 38 C 1050 44 1150 36 1200 38 L 1200 140 L 0 140 Z" fill="#255c57"/>
+      <use href="#tuft" transform="translate(90,96)"/>
+      <use href="#tuft" transform="translate(310,104)"/>
+      <use href="#tuft" transform="translate(560,98)"/>
+      <use href="#tuft" transform="translate(820,106)"/>
+      <use href="#tuft" transform="translate(1080,98)"/>
       <g fill="#f0a377">
-        <circle cx="44" cy="470" r="3.4"/><circle cx="90" cy="482" r="2.8"/>
-        <circle cx="150" cy="472" r="3"/><circle cx="210" cy="484" r="2.6"/>
-        <circle cx="268" cy="470" r="3.2"/><circle cx="322" cy="482" r="2.8"/>
+        <circle cx="60" cy="70" r="3.4"/><circle cx="220" cy="86" r="2.8"/>
+        <circle cx="420" cy="72" r="3"/><circle cx="640" cy="88" r="2.6"/>
+        <circle cx="860" cy="70" r="3.2"/><circle cx="1060" cy="84" r="2.8"/><circle cx="1170" cy="72" r="3"/>
       </g>
       <g fill="#e9c46a">
-        <circle cx="66" cy="490" r="2.2"/><circle cx="118" cy="466" r="2"/>
-        <circle cx="184" cy="478" r="2.2"/><circle cx="246" cy="492" r="2"/>
-        <circle cx="296" cy="464" r="2.2"/><circle cx="340" cy="492" r="2"/>
+        <circle cx="140" cy="94" r="2.2"/><circle cx="360" cy="66" r="2"/>
+        <circle cx="540" cy="80" r="2.2"/><circle cx="760" cy="96" r="2"/>
+        <circle cx="980" cy="64" r="2.2"/><circle cx="1140" cy="96" r="2"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<header class="hero">
+
+  <!-- night sky with moon + stars -->
+  <div class="layer sky" aria-hidden="true">
+    <svg viewBox="0 0 1200 220" preserveAspectRatio="xMidYMin slice">
+      <path d="M0 0 H1200 V150 C 1000 185 800 200 600 200 C 400 200 200 185 0 150 Z" fill="#1e4d4b"/>
+      <circle cx="600" cy="86" r="42" fill="#e9c46a"/>
+      <circle cx="620" cy="71" r="40" fill="#1e4d4b"/>
+      <use href="#star4" transform="translate(676,52) scale(1.2)"/>
+      <use href="#star4" transform="translate(712,92)"/>
+      <use href="#star4" transform="translate(524,96) scale(.9)"/>
+      <use href="#star4" transform="translate(488,44) scale(1.1)"/>
+      <use href="#star4" transform="translate(760,40) scale(.8)"/>
+      <use href="#star4" transform="translate(600,140) scale(.75)"/>
+      <use href="#star4" transform="translate(420,110) scale(.7)"/>
+      <use href="#star4" transform="translate(780,120) scale(.7)"/>
+      <use href="#star4" transform="translate(320,60) scale(.85)"/>
+      <use href="#star4" transform="translate(880,64) scale(.85)"/>
+      <use href="#star4" transform="translate(200,100) scale(.7)"/>
+      <use href="#star4" transform="translate(1000,104) scale(.7)"/>
+      <use href="#star4" transform="translate(110,50) scale(.75)"/>
+      <use href="#star4" transform="translate(1090,52) scale(.75)"/>
+    </svg>
+  </div>
+
+  <!-- birch trunks at the far edges -->
+  <div class="layer trunk l" aria-hidden="true">
+    <svg viewBox="0 0 60 800" preserveAspectRatio="none">
+      <path d="M14 800 C 6 620 8 380 20 200 C 24 140 30 90 42 40 L 60 40 C 48 96 42 150 38 210 C 28 390 28 620 34 800 Z" fill="#d9b6ac"/>
+      <g stroke="#b08e86" stroke-width="3" stroke-linecap="round">
+        <path d="M24 300 h12"/><path d="M20 460 h11"/><path d="M26 620 h11"/><path d="M30 160 h12"/>
       </g>
     </svg>
-
-    <!-- central cream panel -->
-    <section class="panel">
-      <div class="monogram">L&middot;D</div>
-      <div class="panel-border"></div>
-      <span class="corner tl"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-        <path d="M2 24 C 2 12 12 2 24 2"/>
-        <path d="M6 24 C 6 14 14 6 24 6"/>
-        <path d="M10 20 C 14 20 17 17 17 13" stroke-linecap="round"/>
-        <circle cx="10" cy="20" r="1.4" fill="currentColor" stroke="none"/>
-      </svg></span>
-      <span class="corner tr"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-        <path d="M2 24 C 2 12 12 2 24 2"/>
-        <path d="M6 24 C 6 14 14 6 24 6"/>
-        <path d="M10 20 C 14 20 17 17 17 13" stroke-linecap="round"/>
-        <circle cx="10" cy="20" r="1.4" fill="currentColor" stroke="none"/>
-      </svg></span>
-      <span class="corner bl"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-        <path d="M2 24 C 2 12 12 2 24 2"/>
-        <path d="M6 24 C 6 14 14 6 24 6"/>
-        <path d="M10 20 C 14 20 17 17 17 13" stroke-linecap="round"/>
-        <circle cx="10" cy="20" r="1.4" fill="currentColor" stroke="none"/>
-      </svg></span>
-      <span class="corner br"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
-        <path d="M2 24 C 2 12 12 2 24 2"/>
-        <path d="M6 24 C 6 14 14 6 24 6"/>
-        <path d="M10 20 C 14 20 17 17 17 13" stroke-linecap="round"/>
-        <circle cx="10" cy="20" r="1.4" fill="currentColor" stroke="none"/>
-      </svg></span>
-
-      <div class="panel-content">
-        <svg class="stars-row" viewBox="0 0 96 12" aria-hidden="true" fill="currentColor">
-          <circle cx="8" cy="6" r="1"/><path d="M24 2 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1Z"/>
-          <circle cx="40" cy="4" r="1"/><path d="M48 1 l1.2 3.3 3.3 1.2 -3.3 1.2 -1.2 3.3 -1.2 -3.3 -3.3 -1.2 3.3 -1.2Z"/>
-          <circle cx="56" cy="4" r="1"/><path d="M72 2 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1Z"/>
-          <circle cx="88" cy="6" r="1"/>
-        </svg>
-        <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.1">
-          <path d="M4 8 C 16 2 26 2 34 8 C 40 12 46 12 52 8"/>
-          <path d="M116 8 C 104 2 94 2 86 8 C 80 12 74 12 68 8"/>
-          <circle cx="60" cy="8" r="2.4"/>
-          <circle cx="60" cy="8" r="4.6" opacity=".55"/>
-        </svg>
-        <p class="invited">You are cordially invited<br>to the wedding of</p>
-        <h1 class="names">Lorem Ipsum</h1>
-        <p class="amp">-&nbsp;&amp;&nbsp;-</p>
-        <h1 class="names">Dolor Amet</h1>
-        <p class="when">Saturday, the seventh of October<br>Two thousand twenty-six<br>six o&rsquo;clock</p>
-        <p class="venue">Hewitt Oaks</p>
-        <p class="place">Consectetur, Elitshire</p>
-        <p class="follow">Merriment to Follow</p>
-        <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.1" style="transform:scaleY(-1)">
-          <path d="M4 8 C 16 2 26 2 34 8 C 40 12 46 12 52 8"/>
-          <path d="M116 8 C 104 2 94 2 86 8 C 80 12 74 12 68 8"/>
-          <circle cx="60" cy="8" r="2.4"/>
-          <circle cx="60" cy="8" r="4.6" opacity=".55"/>
-        </svg>
-      </div>
-    </section>
   </div>
+  <div class="layer trunk r" aria-hidden="true">
+    <svg viewBox="0 0 60 800" preserveAspectRatio="none">
+      <path d="M14 800 C 6 620 8 380 20 200 C 24 140 30 90 42 40 L 60 40 C 48 96 42 150 38 210 C 28 390 28 620 34 800 Z" fill="#d9b6ac"/>
+      <g stroke="#b08e86" stroke-width="3" stroke-linecap="round">
+        <path d="M24 300 h12"/><path d="M20 460 h11"/><path d="M26 620 h11"/><path d="M30 160 h12"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- rose garlands + willow strands, top corners flowing down -->
+  <div class="layer garland l" aria-hidden="true">
+    <svg viewBox="0 0 160 560" preserveAspectRatio="xMinYMin meet">
+      <use href="#willow" transform="translate(96,60)"/>
+      <use href="#willow" transform="translate(120,66) scale(.9)"/>
+      <use href="#willow" transform="translate(142,58) scale(1.05)"/>
+      <use href="#rosecluster" transform="translate(36,26)"/>
+      <use href="#rosecluster" transform="translate(70,16) scale(.9)"/>
+      <use href="#rosecluster" transform="translate(104,28) scale(1.05)"/>
+      <use href="#rosecluster" transform="translate(136,14) scale(.8)"/>
+      <use href="#rosecluster" transform="translate(30,64) scale(.95)"/>
+      <use href="#rosecluster" transform="translate(54,98) scale(.85)"/>
+      <use href="#rosecluster" transform="translate(34,136) scale(.9)"/>
+      <use href="#rosecluster" transform="translate(54,176) scale(.75)"/>
+      <use href="#rosecluster" transform="translate(36,216) scale(.85)"/>
+      <use href="#rosecluster" transform="translate(52,258) scale(.7)"/>
+      <use href="#rosecluster" transform="translate(36,300) scale(.8)"/>
+      <use href="#rosecluster" transform="translate(50,342) scale(.65)"/>
+      <use href="#rosecluster" transform="translate(38,386) scale(.72)"/>
+      <use href="#rosecluster" transform="translate(50,430) scale(.6)"/>
+      <use href="#rosecluster" transform="translate(40,474) scale(.66)"/>
+      <use href="#rosecluster" transform="translate(48,516) scale(.55)"/>
+    </svg>
+  </div>
+  <div class="layer garland r" aria-hidden="true">
+    <svg viewBox="0 0 160 560" preserveAspectRatio="xMinYMin meet">
+      <use href="#willow" transform="translate(96,60)"/>
+      <use href="#willow" transform="translate(120,66) scale(.9)"/>
+      <use href="#willow" transform="translate(142,58) scale(1.05)"/>
+      <use href="#rosecluster" transform="translate(36,26)"/>
+      <use href="#rosecluster" transform="translate(70,16) scale(.9)"/>
+      <use href="#rosecluster" transform="translate(104,28) scale(1.05)"/>
+      <use href="#rosecluster" transform="translate(136,14) scale(.8)"/>
+      <use href="#rosecluster" transform="translate(30,64) scale(.95)"/>
+      <use href="#rosecluster" transform="translate(54,98) scale(.85)"/>
+      <use href="#rosecluster" transform="translate(34,136) scale(.9)"/>
+      <use href="#rosecluster" transform="translate(54,176) scale(.75)"/>
+      <use href="#rosecluster" transform="translate(36,216) scale(.85)"/>
+      <use href="#rosecluster" transform="translate(52,258) scale(.7)"/>
+      <use href="#rosecluster" transform="translate(36,300) scale(.8)"/>
+      <use href="#rosecluster" transform="translate(50,342) scale(.65)"/>
+      <use href="#rosecluster" transform="translate(38,386) scale(.72)"/>
+      <use href="#rosecluster" transform="translate(50,430) scale(.6)"/>
+      <use href="#rosecluster" transform="translate(40,474) scale(.66)"/>
+      <use href="#rosecluster" transform="translate(48,516) scale(.55)"/>
+    </svg>
+  </div>
+
+  <!-- meadow at the bottom of the hero -->
+  <div class="layer ground" aria-hidden="true">
+    <svg viewBox="0 0 1200 140" preserveAspectRatio="xMidYMax slice"><use href="#groundart"/></svg>
+  </div>
+
+  <!-- central cream panel -->
+  <section class="panel">
+    <div class="monogram">L&middot;D</div>
+    <div class="panel-border"></div>
+    <span class="corner tl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner tr"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner bl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner br"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+
+    <svg class="stars-row" viewBox="0 0 96 12" aria-hidden="true"><use href="#starsrowart"/></svg>
+    <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true"><use href="#dividerart"/></svg>
+    <p class="invited">You are cordially invited<br>to the wedding of</p>
+    <h1 class="names">Lorem Ipsum</h1>
+    <p class="amp">-&nbsp;&amp;&nbsp;-</p>
+    <h1 class="names">Dolor Amet</h1>
+    <p class="when">Saturday, the seventh of October<br>Two thousand twenty-six &middot; six o&rsquo;clock</p>
+    <p class="venue">Hewitt Oaks</p>
+    <p class="place">Consectetur, Elitshire</p>
+    <p class="follow">Merriment to Follow</p>
+    <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true" style="transform:scaleY(-1)"><use href="#dividerart"/></svg>
+  </section>
+</header>
+
+<main class="sections">
+  <section class="panel">
+    <div class="panel-border"></div>
+    <span class="corner tl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner tr"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner bl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner br"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+
+    <h2>Our Day</h2>
+    <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true"><use href="#dividerart"/></svg>
+    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer laoreet,
+    nulla non gravida porta, tellus augue commodo diam, at luctus enim est nec arcu.</p>
+    <div class="cards">
+      <div class="dcard">
+        <h3>Ceremony</h3>
+        <span class="t">4 o&rsquo;clock</span>
+        <p>Consectetur Chapel &mdash; lorem ipsum dolor sit amet, elit sed diam.</p>
+      </div>
+      <div class="dcard">
+        <h3>Reception</h3>
+        <span class="t">6 o&rsquo;clock</span>
+        <p>Hewitt Oaks &mdash; sed do eiusmod tempor incididunt ut labore.</p>
+      </div>
+      <div class="dcard">
+        <h3>Merriment</h3>
+        <span class="t">to follow</span>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-border"></div>
+    <span class="corner tl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner tr"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner bl"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+    <span class="corner br"><svg viewBox="0 0 26 26" aria-hidden="true"><use href="#cornerart"/></svg></span>
+
+    <h2>Kindly Reply</h2>
+    <svg class="deco-divider" viewBox="0 0 120 16" aria-hidden="true"><use href="#dividerart"/></svg>
+    <p class="lead">By the fifteenth of September</p>
+    <form action="#" onsubmit="return false">
+      <div>
+        <label for="rname">Your name</label>
+        <input type="text" id="rname" name="name" autocomplete="name" placeholder="Lorem Ipsumson">
+      </div>
+      <div>
+        <label>Guests</label>
+        <div class="choices">
+          <label><input type="radio" name="attend" value="yes"> Graciously accepts</label>
+          <label><input type="radio" name="attend" value="no"> Regretfully declines</label>
+        </div>
+      </div>
+      <div>
+        <label for="rnote">A note for the couple</label>
+        <textarea id="rnote" name="note" placeholder="Lorem ipsum dolor sit amet&hellip;"></textarea>
+      </div>
+      <button type="submit">Send Reply</button>
+    </form>
+  </section>
 </main>
+
+<footer>
+  <div class="ground-static" aria-hidden="true">
+    <svg viewBox="0 0 1200 140" preserveAspectRatio="xMidYMax slice"><use href="#groundart"/></svg>
+  </div>
+  L&middot;D &mdash; 7 &middot; 10 &middot; 2026
+</footer>
+
 </body>
 </html>

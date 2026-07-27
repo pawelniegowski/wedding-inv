@@ -15,168 +15,263 @@
   --blue:#5f82a4;
   --olive:#a8a578;
   --olive-deep:#8f8c5e;
-  --bw:clamp(58px,15vw,96px); /* pattern border thickness */
+  /* border geometry derived from the traced source art:
+     top edge 110px thick, left edge 115px, corner 210px square */
+  --bh:clamp(56px,9vh,110px);                 /* top/bottom edge thickness */
+  --bw:calc(var(--bh) * 115 / 110);           /* left/right edge thickness */
+  --cw:calc(var(--bh) * 210 / 110);           /* corner square size */
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(160deg,#4b4438,#2c281f);
-  padding:clamp(12px,4vw,48px);
-  font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  background:var(--cream); /* flat: fixed border pieces must blend seamlessly */
   color:var(--ink);
+  font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  line-height:1.6;
+  overflow-x:hidden;
 }
-.card{
+/* pattern border pinned to the viewport, built from art traced off the
+   original invitation (reference/extracted). Opaque so content scrolls
+   beneath; other corners/edges are mirrors, as in the original. */
+.edge,.corner{position:fixed;pointer-events:none;z-index:40;background-color:var(--cream)}
+.corner{width:var(--cw);height:var(--cw);background-image:url(assets/corner-tl.svg);background-size:100% 100%;background-repeat:no-repeat}
+.corner.tl{top:0;left:0}
+.corner.tr{top:0;right:0;transform:scaleX(-1)}
+.corner.bl{bottom:0;left:0;transform:scaleY(-1)}
+.corner.br{bottom:0;right:0;transform:scale(-1,-1)}
+.edge-top,.edge-bottom{
+  left:var(--cw);right:var(--cw);height:var(--bh);
+  background-image:url(assets/edge-top.svg);
+  background-repeat:repeat-x;
+  background-size:auto 100%;
+  /* corner art already covers 94 source px of the edge tile — start in phase */
+  background-position-x:calc(-94 * var(--bh) / 110);
+}
+.edge-top{top:0}
+.edge-bottom{bottom:0;transform:scaleY(-1)}
+.edge-left,.edge-right{
+  top:var(--cw);bottom:var(--cw);width:var(--bw);
+  background-image:url(assets/edge-left.svg);
+  background-repeat:repeat-y;
+  background-size:100% auto;
+  background-position-y:calc(-5 * var(--bh) / 110);
+}
+.edge-left{left:0}
+.edge-right{right:0;transform:scaleX(-1)}
+@media (max-width:640px){
+  :root{--bh:clamp(44px,7vh,64px)}
+  .corner,.edge-left,.edge-right{display:none}
+  .edge-top,.edge-bottom{left:0;right:0;background-position-x:0}
+}
+main{
   position:relative;
-  width:min(460px,100%);
-  aspect-ratio:432/604;
-  min-height:560px;
-  min-width:0; /* flex item: stop aspect-ratio+min-height transferring a min width wider than small phones */
-  background:var(--cream);
-  background-image:radial-gradient(ellipse at 50% 35%, rgba(255,255,255,.4), rgba(120,110,80,.12) 95%);
-  border-radius:12px;
-  box-shadow:0 25px 60px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);
-  overflow:hidden;
+  max-width:640px;
+  margin:0 auto;
+  padding:var(--bh) clamp(1.4rem,6vw,2rem);
 }
-.edge{position:absolute;pointer-events:none}
-.edge svg{display:block;width:100%;height:100%}
-.edge-top{top:0;left:0;right:0;height:var(--bw)}
-.edge-bottom{bottom:0;left:0;right:0;height:var(--bw);transform:scaleY(-1)}
-.edge-left{top:var(--bw);bottom:var(--bw);left:0;width:var(--bw)}
-.edge-right{top:var(--bw);bottom:var(--bw);right:0;width:var(--bw);transform:scaleX(-1)}
-.content{
-  position:absolute;
-  inset:calc(var(--bw) + 2px);
+@media (min-width:641px){
+  main{padding-left:calc(var(--bw) + 2rem);padding-right:calc(var(--bw) + 2rem);max-width:calc(640px + 2*var(--bw) + 4rem)}
+}
+section{
+  text-align:center;
+  padding:clamp(2.6rem,6vh,4.2rem) 0;
+}
+.hero{
+  min-height:calc(100svh - 2*var(--bh));
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  text-align:center;
   gap:.3em;
-  padding:2% 4%;
-  z-index:2;
 }
-.intro{
-  font-style:italic;
-  font-size:clamp(.72rem,3vw,.86rem);
-  line-height:1.55;
-}
+.intro{font-style:italic;font-size:clamp(.95rem,2vw,1.15rem);line-height:1.7}
 .name{
   font-variant:small-caps;
-  font-size:clamp(1.15rem,5vw,1.5rem);
+  font-size:clamp(1.8rem,4.6vw,2.9rem);
   letter-spacing:.14em;
   font-weight:500;
-  margin-top:.5em;
+  line-height:1.25;
+  margin-top:.4em;
 }
-.name:last-of-type{margin-top:0}
-.amp{
-  font-size:clamp(.8rem,3.4vw,.95rem);
-  letter-spacing:.2em;
-  margin:.1em 0;
-}
-.when{
-  font-style:italic;
-  font-size:clamp(.74rem,3.1vw,.9rem);
-  line-height:1.55;
-  margin-top:1.1em;
-}
-.time{
-  font-style:italic;
-  font-size:clamp(.74rem,3.1vw,.9rem);
-  margin-top:.8em;
-}
+.name + .name{margin-top:0}
+.amp{font-size:clamp(1rem,2.2vw,1.3rem);letter-spacing:.2em;margin:.1em 0}
+.when{font-style:italic;font-size:clamp(.95rem,2vw,1.15rem);line-height:1.7;margin-top:1.2em}
 .venue{
   font-variant:small-caps;
-  font-size:clamp(.82rem,3.5vw,1rem);
-  letter-spacing:.16em;
-  font-weight:600;
-  margin-top:1.1em;
+  font-size:clamp(1.05rem,2.3vw,1.35rem);
+  letter-spacing:.16em;font-weight:600;margin-top:1em;
 }
-.place{
-  font-style:italic;
-  font-size:clamp(.74rem,3.1vw,.9rem);
-}
+.place{font-style:italic;font-size:clamp(.95rem,2vw,1.1rem)}
 .script{
   font-family:"Monsieur La Doulaise","Snell Roundhand","Apple Chancery",cursive;
-  font-size:clamp(1.35rem,5.6vw,1.7rem);
-  margin-top:.9em;
-  color:#4a4638;
+  font-size:clamp(1.7rem,3.6vw,2.3rem);
+  margin-top:1em;color:#4a4638;
   transform:rotate(-2deg);
 }
-@media (max-width:380px){
-  :root{--bw:clamp(44px,13vw,58px)}
+/* single thistle as section divider */
+.divider{width:clamp(54px,7vw,84px);height:auto;margin:0 auto 1.4em;display:block}
+h2{
+  font-variant:small-caps;
+  font-size:clamp(1.1rem,2.4vw,1.4rem);
+  letter-spacing:.24em;text-indent:.24em;
+  font-weight:600;
+  margin-bottom:.8em;
+}
+.lead{font-style:italic;font-size:clamp(.98rem,2vw,1.12rem)}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:clamp(1rem,2.5vw,1.5rem);
+  margin-top:1.8em;
+}
+.dcard{
+  border:1px solid var(--olive-deep);
+  outline:1px solid rgba(143,140,94,.4);
+  outline-offset:3px;
+  background:rgba(255,255,255,.3);
+  padding:1.5em 1.1em;
+}
+.dcard h3{
+  font-variant:small-caps;
+  font-size:clamp(.9rem,1.9vw,1.05rem);
+  letter-spacing:.2em;text-indent:.2em;
+  font-weight:600;color:var(--blue);
+  margin-bottom:.5em;
+}
+.dcard p{font-size:clamp(.88rem,1.8vw,1rem)}
+.dcard .t{font-style:italic;display:block;margin-bottom:.3em}
+form{margin-top:1.8em;display:flex;flex-direction:column;gap:1.5em;text-align:left}
+label{
+  display:block;
+  font-variant:small-caps;
+  font-size:.95rem;letter-spacing:.14em;
+  font-weight:600;margin-bottom:.35em;color:var(--blue);
+}
+input[type=text],textarea{
+  width:100%;background:transparent;border:0;
+  border-bottom:1px solid var(--olive-deep);
+  font-family:inherit;font-size:1.05rem;color:var(--ink);
+  padding:.35em .1em;border-radius:0;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-bottom-color:var(--blue)}
+textarea{resize:vertical;min-height:4.5em}
+.choices{display:flex;gap:2em;flex-wrap:wrap}
+.choices label{display:flex;align-items:center;gap:.6em;margin:0;cursor:pointer}
+input[type=radio]{accent-color:var(--blue);width:1em;height:1em}
+button{
+  align-self:center;font-family:inherit;
+  font-variant:small-caps;
+  font-size:1.05rem;letter-spacing:.22em;text-indent:.22em;
+  color:var(--cream);background:var(--blue);
+  border:1px solid var(--blue);
+  padding:.7em 2.4em;cursor:pointer;
+  transition:background .2s,color .2s;
+}
+button:hover{background:transparent;color:var(--blue)}
+footer{
+  text-align:center;
+  padding:0 0 clamp(1.5rem,4vh,2.5rem);
+  font-variant:small-caps;
+  font-size:.95rem;letter-spacing:.2em;
 }
 </style>
 </head>
 <body>
-<main class="card" aria-label="Wedding invitation">
 
-  <!-- shared thistle motif -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <g id="thistle">
-        <!-- sweeping blue side fronds: fill tile edges so adjacent tiles connect -->
-        <path d="M0 108 C 12 72 10 40 0 12 C 30 34 38 68 26 108 Z" fill="#5f82a4"/>
-        <path d="M108 108 C 96 72 98 40 108 12 C 78 34 70 68 82 108 Z" fill="#5f82a4"/>
-        <!-- olive curls filling top corners -->
-        <path d="M0 0 C 20 4 33 15 39 32 C 21 28 8 17 0 3 Z" fill="#a8a578"/>
-        <path d="M108 0 C 88 4 75 15 69 32 C 87 28 100 17 108 3 Z" fill="#a8a578"/>
-        <!-- olive acanthus fan from bottom centre -->
-        <path d="M54 108 C 28 96 15 76 17 50 C 39 62 52 82 54 104 Z" fill="#a8a578"/>
-        <path d="M54 108 C 80 96 93 76 91 50 C 69 62 56 82 54 104 Z" fill="#8f8c5e"/>
-        <!-- central stem -->
-        <path d="M54 104 C 48 78 48 58 54 40" stroke="#8f8c5e" stroke-width="3" fill="none"/>
-        <!-- small blue leaves flanking the stem -->
-        <path d="M46 72 C 36 66 31 57 32 46 C 41 52 46 61 46 72 Z" fill="#5f82a4"/>
-        <path d="M62 72 C 72 66 77 57 76 46 C 67 52 62 61 62 72 Z" fill="#5f82a4"/>
-        <!-- thistle globe -->
-        <ellipse cx="54" cy="29" rx="15" ry="13" fill="#5f82a4"/>
-        <g stroke="#efe9d6" stroke-width="1.2" fill="none">
-          <path d="M43 24 q11 6 22 0"/>
-          <path d="M42 30 q12 6 24 0"/>
-          <path d="M45 36 q9 5 18 0"/>
-        </g>
-        <!-- spiky crown -->
-        <path d="M41 21 L 34 6 L 46 14 L 50 0 L 54 12 L 58 0 L 62 14 L 74 6 L 67 21 Z" fill="#5f82a4"/>
+<!-- shared thistle motif -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- standalone thistle for section dividers: globe + fan, no border side-sweeps -->
+    <g id="thistle-solo">
+      <path d="M54 108 C 28 96 15 76 17 50 C 39 62 52 82 54 104 Z" fill="#a8a578"/>
+      <path d="M54 108 C 80 96 93 76 91 50 C 69 62 56 82 54 104 Z" fill="#8f8c5e"/>
+      <path d="M54 104 C 48 78 48 58 54 40" stroke="#8f8c5e" stroke-width="3" fill="none"/>
+      <path d="M46 72 C 36 66 31 57 32 46 C 41 52 46 61 46 72 Z" fill="#5f82a4"/>
+      <path d="M62 72 C 72 66 77 57 76 46 C 67 52 62 61 62 72 Z" fill="#5f82a4"/>
+      <ellipse cx="54" cy="29" rx="15" ry="13" fill="#5f82a4"/>
+      <g stroke="#efe9d6" stroke-width="1.2" fill="none">
+        <path d="M43 24 q11 6 22 0"/>
+        <path d="M42 30 q12 6 24 0"/>
+        <path d="M45 36 q9 5 18 0"/>
       </g>
-      <!-- one horizontal run of motifs, tile = 108px -->
-      <g id="run">
-        <use href="#thistle"/>
-        <use href="#thistle" transform="translate(108,0)"/>
-        <use href="#thistle" transform="translate(216,0)"/>
-        <use href="#thistle" transform="translate(324,0)"/>
-        <use href="#thistle" transform="translate(432,0)"/>
-        <use href="#thistle" transform="translate(540,0)"/>
-        <use href="#thistle" transform="translate(648,0)"/>
-        <use href="#thistle" transform="translate(756,0)"/>
-      </g>
-    </defs>
-  </svg>
+      <path d="M41 21 L 34 6 L 46 14 L 50 0 L 54 12 L 58 0 L 62 14 L 74 6 L 67 21 Z" fill="#5f82a4"/>
+    </g>
+  </defs>
+</svg>
 
-  <div class="edge edge-top" aria-hidden="true">
-    <svg viewBox="0 0 864 108" preserveAspectRatio="xMidYMid slice"><use href="#run"/></svg>
-  </div>
-  <div class="edge edge-bottom" aria-hidden="true">
-    <svg viewBox="0 0 864 108" preserveAspectRatio="xMidYMid slice"><use href="#run"/></svg>
-  </div>
-  <div class="edge edge-left" aria-hidden="true">
-    <svg viewBox="0 0 108 864" preserveAspectRatio="xMidYMid slice"><g transform="rotate(90 54 54)"><use href="#run" transform="translate(0,0)"/></g></svg>
-  </div>
-  <div class="edge edge-right" aria-hidden="true">
-    <svg viewBox="0 0 108 864" preserveAspectRatio="xMidYMid slice"><g transform="rotate(90 54 54)"><use href="#run" transform="translate(0,0)"/></g></svg>
-  </div>
+<div class="edge edge-top" aria-hidden="true"></div>
+<div class="edge edge-bottom" aria-hidden="true"></div>
+<div class="edge edge-left" aria-hidden="true"></div>
+<div class="edge edge-right" aria-hidden="true"></div>
+<div class="corner tl" aria-hidden="true"></div>
+<div class="corner tr" aria-hidden="true"></div>
+<div class="corner bl" aria-hidden="true"></div>
+<div class="corner br" aria-hidden="true"></div>
 
-  <section class="content">
+<main>
+  <section class="hero">
     <p class="intro">Together with their parents<br>you are cordially invited to<br>celebrate the marriage of</p>
     <h1 class="name">Lorem Ipsum</h1>
     <p class="amp">&ndash;&nbsp;&amp;&nbsp;&ndash;</p>
     <h1 class="name">Dolor Amet</h1>
     <p class="when">Saturday, the fifth of December<br>Two thousand twenty-six</p>
-    <p class="time">five o&rsquo;clock</p>
     <p class="venue">Consectetur House</p>
     <p class="place">Adipiscing, Elitshire</p>
     <p class="script">Merriment to follow</p>
   </section>
+
+  <section>
+    <svg class="divider" viewBox="0 0 108 112" aria-hidden="true"><use href="#thistle-solo" y="2"/></svg>
+    <h2>Our Day</h2>
+    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer laoreet,
+    nulla non gravida porta, tellus augue commodo diam, at luctus enim est nec arcu.</p>
+    <div class="cards">
+      <div class="dcard">
+        <h3>Ceremony</h3>
+        <span class="t">four o&rsquo;clock</span>
+        <p>Consectetur Chapel &mdash; lorem ipsum dolor sit amet, elit sed diam.</p>
+      </div>
+      <div class="dcard">
+        <h3>Reception</h3>
+        <span class="t">six o&rsquo;clock</span>
+        <p>Cass House &mdash; sed do eiusmod tempor incididunt ut labore.</p>
+      </div>
+      <div class="dcard">
+        <h3>Merriment</h3>
+        <span class="t">to follow</span>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <svg class="divider" viewBox="0 0 108 112" aria-hidden="true"><use href="#thistle-solo" y="2"/></svg>
+    <h2>Kindly Reply</h2>
+    <p class="lead">By the fifth of November</p>
+    <form action="#" onsubmit="return false">
+      <div>
+        <label for="rname">Your name</label>
+        <input type="text" id="rname" name="name" autocomplete="name" placeholder="Lorem Ipsumson">
+      </div>
+      <div>
+        <label>Will you join us?</label>
+        <div class="choices">
+          <label><input type="radio" name="attend" value="yes"> Graciously accepts</label>
+          <label><input type="radio" name="attend" value="no"> Regretfully declines</label>
+        </div>
+      </div>
+      <div>
+        <label for="rnote">A note for the couple</label>
+        <textarea id="rnote" name="note" placeholder="Lorem ipsum dolor sit amet&hellip;"></textarea>
+      </div>
+      <button type="submit">Send Reply</button>
+    </form>
+  </section>
+
+  <footer>
+    Lorem &amp; Dolor &mdash; 5 &middot; 12 &middot; 2026
+  </footer>
 </main>
+
 </body>
 </html>
