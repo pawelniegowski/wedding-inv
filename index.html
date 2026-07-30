@@ -120,6 +120,27 @@ section{
   letter-spacing:.34em;text-indent:.34em;
   text-transform:uppercase;margin-top:.6em;font-weight:500;
 }
+.city a{
+  color:inherit;
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+  transition:border-color .2s,color .2s;
+}
+.city a:hover,.city a:focus-visible{color:var(--gold-dark);border-bottom-color:var(--gold)}
+.pin{
+  width:.95em;
+  height:auto;
+  color:var(--gold);
+  vertical-align:-.16em;
+  margin-left:.15em;
+}
+.nowrap{white-space:nowrap}
+/* visible to screen readers only */
+.sr-only{
+  position:absolute;width:1px;height:1px;
+  margin:-1px;padding:0;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;
+}
 h2{
   font-size:clamp(1rem,2.4vw,1.3rem);
   letter-spacing:.4em;
@@ -263,6 +284,12 @@ footer{
       <use href="#frond" transform="translate(84,155) rotate(92) scale(.8)"/>
       <use href="#frond" transform="translate(196,26) rotate(-158) scale(.8)"/>
     </g>
+    <g id="pinart">
+      <path d="M12 1.7 C6.9 1.7 2.8 5.7 2.8 10.7 C2.8 17 12 29.6 12 29.6
+               C12 29.6 21.2 17 21.2 10.7 C21.2 5.7 17.1 1.7 12 1.7 Z"
+            fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="12" cy="10.7" r="3.3" fill="currentColor"/>
+    </g>
     <g id="sprigart">
       <circle cx="60" cy="10" r="4" fill="currentColor"/>
       <circle cx="48" cy="12" r="3" fill="currentColor"/>
@@ -284,7 +311,10 @@ footer{
     <p class="people">Ewę i Arkadiusza Niegowskich</p>
     <p class="eyebrow">na obiad weselny</p>
     <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
-    <p class="city">w Restauracji Gdańskiej<br>ul. Świętego Ducha 16/24</p>
+    <p class="city"><a href="https://maps.app.goo.gl/c3KKdzaPyXcYRtjc9" target="_blank" rel="noopener">w
+      Restauracji Gdańskiej<br>ul. Świętego Ducha <span class="nowrap">16/24<svg class="pin"
+      viewBox="0 0 24 32" aria-hidden="true"><use href="#pinart"/></svg></span><span class="sr-only">
+      — otwórz w Mapach Google</span></a></p>
     <p class="day">piątek, 11 września 2026</p>
     <p class="day">16:00</p>
   </section>
