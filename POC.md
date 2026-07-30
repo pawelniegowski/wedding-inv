@@ -160,13 +160,16 @@ One round trip; confirmation text comes from Google's echo, not local state.
 ## 5. Test checklist
 
 - [ ] Incognito GET of `/exec` → `{"status":"alive"}`, **no Google login prompt**.
-- [ ] `curl -L -d '{"key":"<magic-key>","name":"CurlTest","attending":"yes","guests":2}' <exec-url>`
+- [ ] `curl -L -d '{"key":"<magic-key>","attending":"yes","people":"CurlTest,Second Person"}' <exec-url>`
       → `status:"ok"` + `saved` echo → row appears in the Sheet.
       (Do **not** add `-X POST`: it forces POST onto Google's one-time redirect URL,
       which only accepts GET → HTML error page. `-d` alone already makes the first
       request a POST, and curl correctly downgrades to GET on the 302.)
 - [ ] Same curl with a wrong/missing `key` → `{"status":"forbidden"}`, no row in Sheet.
-- [ ] Open `index.html?g=Anna%20%26%20Tomek` → name field prefilled "Anna & Tomek".
+- [ ] Open an `#<blob>` invite link (§5.5) → display line personalized, one Tak/Nie
+      row per invited person, plus-one field only when a single person is invited.
+- [ ] Open the page with no/garbage fragment → button disabled; force-enable it in
+      the console and submit → **no request leaves the browser**.
 - [ ] Submit from the page → "Saved ✓" shows Google-echoed values → row in Sheet.
 - [ ] Submit from a **phone not logged into Google** → same result. ← the money test
 - [ ] Temporarily break `RSVP_ENDPOINT` (typo one char) → error state shows, form values
@@ -177,15 +180,36 @@ One round trip; confirmation text comes from Google's echo, not local state.
 
 ---
 
-## 5.5 Magic key (added after initial build)
+## 5.5 Invite links: one fragment blob (magic key + guest list)
 
 The public repo means anyone crawling GitHub can find the page and the `/exec` URL.
-Gate: invite links carry `?k=<magic-key>`; the client sends it as `key` in the POST
-payload and the script compares it against the **`RSVP_KEY` Script Property**
-(Project Settings → Script properties in the Apps Script editor). Mismatch or unset
-property → `{"status":"forbidden"}`, nothing written. The key is visible to guests
-(it's in their URL) and absent from the repo — it's an anti-rando gate, not auth.
-Without `?k=` in the URL the page disables the submit button outright.
+Gate: each invite link carries **one** base64url-encoded UTF-8 JSON blob in the URL
+**fragment**:
+
+````
+https://pawelniegowski.github.io/wedding-inv/#<base64url>
+   { "k": "<magic-key>",                           // sent as `key` in the POST
+     "d": "Ewę i Arkadiusza Niegowskich",          // display line (genitive)
+     "p": ["Ewa Niegowska", "Arkadiusz Niegowski"] // one Tak/Nie row each
+   }
+````
+
+Mint them in the browser console with
+`makeInviteLink('Ewę i Arkadiusza Niegowskich', ['Ewa Niegowska','Arkadiusz Niegowski'], '<key>')`.
+
+The script compares `key` against the **`RSVP_KEY` Script Property** (Project
+Settings → Script properties in the Apps Script editor). Mismatch or unset property
+→ `{"status":"forbidden"}`, nothing written. The key is visible to guests (it's in
+their link) and absent from the repo — an anti-rando gate, not auth.
+
+Why the fragment rather than `?k=&i=`: a fragment is never sent to the server, so
+the guest list and key stay out of GitHub Pages logs and out of `Referer` headers
+on any outbound click. Base64 is obfuscation, not encryption.
+
+Without a usable blob (missing, malformed, no `k`, or no `p` entries) the page
+disables the submit button **and** the submit handler refuses — verified by
+force-re-enabling the button in the console. Pre-fragment `?k=&i=` links are still
+read as a fallback.
 
 ## 6. If the PoC passes → next (not now)
 
@@ -202,7 +226,8 @@ revisit state, OG tags, `noindex`. All already specced in `wedding-invite-spec.m
 | Code changes have no effect | Forgot "Version: New" on redeploy (§4.5) |
 | `{"status":"ok"}` but no row in Sheet | Wrong `SHEET_ID`, or tab not named exactly `RSVPs` |
 | Works for you, fails for others | You're on the `/dev` URL — guests need `/exec` |
-| `{"status":"forbidden"}` on every submit | `RSVP_KEY` Script Property unset/mistyped, `?k=` missing from URL, or key change not redeployed (§4.5) |
+| `{"status":"forbidden"}` on every submit | `RSVP_KEY` Script Property unset/mistyped, `k` missing from the link's fragment blob, or key change not redeployed (§4.5) |
+| Empty `people` column in the Sheet | Deployed `Code.gs` predates the `{key, attending, people}` payload — re-paste and redeploy with Version: New |
 ````
 ````
 

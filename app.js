@@ -2,12 +2,14 @@ const form = document.getElementById('rsvp-form');
 const statusEl = document.getElementById('status');
 const button = form.querySelector('button');
 
-const params = new URLSearchParams(location.search);
-
-// Invite payload from ?i= — base64url-encoded UTF-8 JSON:
-//   { "d": "Ewy i Arkadiusza Niegowskich",          // display string (genitive)
+// The whole invitation is one base64url-encoded UTF-8 JSON blob in the URL
+// fragment:  index.html#<blob>
+//   { "k": "<magic key>",                           // verified server-side
+//     "d": "Ewy i Arkadiusza Niegowskich",          // display string (genitive)
 //     "p": ["Ewa Niegowska", "Arkadiusz Niegowski"] // invited people
 //   }
+// A fragment is never sent to the host, so the invite stays out of server logs
+// and Referer headers — unlike the ?k=&i= query pair this replaces.
 function b64uDecode(s) {
   s = s.replace(/-/g, '+').replace(/_/g, '/');
   while (s.length % 4) s += '=';
@@ -15,10 +17,20 @@ function b64uDecode(s) {
   return new TextDecoder().decode(bytes);
 }
 
+function readInvite() {
+  const raw = location.hash.slice(1);
+  if (raw) return JSON.parse(b64uDecode(decodeURIComponent(raw)));
+  // Links minted before the switch: ?k=<key>&i=<blob without k>
+  const q = new URLSearchParams(location.search);
+  if (!q.get('i')) return null;
+  const legacy = JSON.parse(b64uDecode(q.get('i')));
+  if (!legacy.k) legacy.k = q.get('k');
+  return legacy;
+}
+
 let invite = null;
 try {
-  const raw = params.get('i');
-  if (raw) invite = JSON.parse(b64uDecode(raw));
+  invite = readInvite();
 } catch (_) { invite = null; }
 
 const peopleEl = document.querySelector('.people');
@@ -71,10 +83,10 @@ form.addEventListener('change', () => {
   });
 });
 
-// Magic key from ?k= — sent with the RSVP and verified server-side.
-// A usable invite payload (?i= with at least one person) is equally required.
-// Without either, don't accept entries at all.
-const key = params.get('k');
+// Magic key rides inside the blob — sent with the RSVP and verified server-side.
+// At least one invited person is equally required. Without either, don't accept
+// entries at all.
+const key = invite && invite.k ? String(invite.k) : null;
 if (!key || !people.length) {
   button.disabled = true;
   setStatus('Ten link jest niepełny — użyj linku ze swojego zaproszenia.', true);
@@ -91,9 +103,9 @@ form.addEventListener('submit', async (e) => {
   // The wire format is one comma-delimited field, so names may not contain commas
   const extra = (allowExtra && form.extra ? form.extra.value : '').trim().replace(/,/g, ' ');
 
-  // No usable invite payload → never submit (button is disabled at load too;
+  // No usable invite blob → never submit (button is disabled at load too;
   // this guards against anyone re-enabling it).
-  if (!personRows.length) {
+  if (!key || !personRows.length) {
     setStatus('Ten link jest niepełny — użyj linku ze swojego zaproszenia.', true);
     return;
   }
@@ -170,8 +182,8 @@ form.addEventListener('submit', async (e) => {
 // Dev helper — run in the console to mint invite links:
 //   makeInviteLink('Ewy i Arkadiusza Niegowskich', ['Ewa Niegowska','Arkadiusz Niegowski'], 'tajnyklucz')
 window.makeInviteLink = function (display, peopleArr, k) {
-  const json = JSON.stringify({ d: display, p: peopleArr });
+  const json = JSON.stringify({ k: k || key || '', d: display, p: peopleArr });
   const b64 = btoa(String.fromCharCode(...new TextEncoder().encode(json)))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  return `${location.origin}${location.pathname}?k=${encodeURIComponent(k || key || '')}&i=${b64}`;
+  return `${location.origin}${location.pathname}#${b64}`;
 };
