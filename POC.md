@@ -38,9 +38,13 @@ notifications, localStorage, decline-path niceties. All after the flow is proven
 ````
 ./                  # repo root (moved out of poc/ once the flow was proven and themed)
 ├── index.html      # RSVP page — woodland theme, Polish
+├── guests.js       # encrypted invitation blocks (generated; commit this)
 ├── app.js          # prefill, submit, confirm/error handling
 ├── config.js       # window.RSVP_ENDPOINT = '<PASTE /exec URL>';
 └── Code.gs         # NOT served — copy-paste source for the Google side
+
+uncommitted (see .git/info/exclude):
+  build_encrypted_guestlist.py   guests.txt   invite_links.tsv
 ````
 
 ### 2.1 `index.html`
@@ -180,36 +184,51 @@ One round trip; confirmation text comes from Google's echo, not local state.
 
 ---
 
-## 5.5 Invite links: one fragment blob (magic key + guest list)
+## 5.5 Invite links: an 8-character encrypted token
 
-The public repo means anyone crawling GitHub can find the page and the `/exec` URL.
-Gate: each invite link carries **one** base64url-encoded UTF-8 JSON blob in the URL
-**fragment**:
+The public repo means anyone crawling GitHub can find the page and the `/exec` URL,
+so neither the guest list nor the magic key may appear in it. Each invitation is
+stored in committed `guests.js` as an XOR-encrypted, base64url block; the link is
 
 ````
-https://pawelniegowski.github.io/wedding-inv/#<base64url>
-   { "k": "<magic-key>",                           // sent as `key` in the POST
-     "d": "Ewę i Arkadiusza Niegowskich",          // display line (genitive)
-     "p": ["Ewa Niegowska", "Arkadiusz Niegowski"] // one Tak/Nie row each
-   }
+https://pawelniegowski.github.io/wedding-inv/#rOghHi9N
+                                              └┬─┘└┬─┘
+                        block id (public, a key in guests.js)  keystream seed (the secret)
 ````
 
-Mint them in the browser console with
-`makeInviteLink('Ewę i Arkadiusza Niegowskich', ['Ewa Niegowska','Arkadiusz Niegowski'], '<key>')`.
+Decrypting yields `{ k: <magic-key>, d: <display line>, p: [people] }`, which the
+page uses for the personalized line, the per-person Tak/Nie rows, and the `key`
+field in the POST. Apps Script compares `key` against the **`RSVP_KEY` Script
+Property**; mismatch or unset → `{"status":"forbidden"}`, nothing written.
 
-The script compares `key` against the **`RSVP_KEY` Script Property** (Project
-Settings → Script properties in the Apps Script editor). Mismatch or unset property
-→ `{"status":"forbidden"}`, nothing written. The key is visible to guests (it's in
-their link) and absent from the repo — an anti-rando gate, not auth.
+Blocks are padded to a common length, shuffled, and optionally mixed with decoys,
+so the file leaks neither party sizes nor the guest count. A 4-byte header
+(FNV-1a checksum + length) means a wrong key **fails** rather than rendering
+garbage names. Keystream: `xmur3` seeding `sfc32`, with `GUESTS.s` discarded
+warm-up rounds — mirrored bit-for-bit in `app.js` and the builder, and
+deliberately not `crypto.subtle`, which is unavailable over `file://`.
 
-Why the fragment rather than `?k=&i=`: a fragment is never sent to the server, so
-the guest list and key stay out of GitHub Pages logs and out of `Referer` headers
-on any outbound click. Base64 is obfuscation, not encryption.
+Build with the **uncommitted** `build_encrypted_guestlist.py` (excluded via
+`.git/info/exclude`, alongside `guests.txt` and `invite_links.tsv`):
 
-Without a usable blob (missing, malformed, no `k`, or no `p` entries) the page
-disables the submit button **and** the submit handler refuses — verified by
-force-re-enabling the button in the console. Pre-fragment `?k=&i=` links are still
-read as a fallback.
+````sh
+python3 build_encrypted_guestlist.py --rsvp-key <key> --decoys 8   # add --key-chars 8 for real strength
+````
+
+It prints one link per person plus an `invite_links.tsv` for mail merge, and
+rewrites `guests.js` — **commit `guests.js` together with any `app.js` change**,
+or the deployed page can't decode links. Every re-run mints new keys, so all
+previously sent links stop working.
+
+**Honest security note.** A 4-character key is 24 bits: sweeping all candidates
+against one block costs about 2 core-hours natively, seconds on a GPU. That hides
+the list from anyone casually reading the repo; it does not withstand someone
+determined. `--key-chars 8` (12-character links) pushes a sweep past a thousand
+core-years. Guests pay one ~3 ms decode either way.
+
+Without a decodable token the page disables the submit button **and** the submit
+handler refuses — verified by force-re-enabling the button in the console. There is
+no `?k=`/`?i=` fallback.
 
 ## 6. If the PoC passes → next (not now)
 

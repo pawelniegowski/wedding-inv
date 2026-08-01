@@ -2,35 +2,96 @@ const form = document.getElementById('rsvp-form');
 const statusEl = document.getElementById('status');
 const button = form.querySelector('button');
 
-// The whole invitation is one base64url-encoded UTF-8 JSON blob in the URL
-// fragment:  index.html#<blob>
-//   { "k": "<magic key>",                           // verified server-side
-//     "d": "Ewy i Arkadiusza Niegowskich",          // display string (genitive)
-//     "p": ["Ewa Niegowska", "Arkadiusz Niegowski"] // invited people
-//   }
-// A fragment is never sent to the host, so the invite stays out of server logs
-// and Referer headers — unlike the ?k=&i= query pair this replaces.
-function b64uDecode(s) {
+// The invitation arrives as a short token in the URL fragment: #<id><key>
+//   <id>  first GUESTS.i chars — which block in guests.js to decode
+//   <key> the rest            — seeds the XOR keystream; the only secret
+// Decoding yields { k: <magic key>, d: <display line>, p: [people] }, so the
+// guest list and the magic key are absent from the repo and, because a fragment
+// is never sent to a server, absent from Pages logs and Referer headers too.
+// Blocks are built by build_encrypted_guestlist.py (kept out of the repo).
+function b64uBytes(s) {
   s = s.replace(/-/g, '+').replace(/_/g, '/');
   while (s.length % 4) s += '=';
-  const bytes = Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
+  return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 }
 
-function readInvite() {
-  const raw = location.hash.slice(1);
-  if (raw) return JSON.parse(b64uDecode(decodeURIComponent(raw)));
-  // Links minted before the switch: ?k=<key>&i=<blob without k>
-  const q = new URLSearchParams(location.search);
-  if (!q.get('i')) return null;
-  const legacy = JSON.parse(b64uDecode(q.get('i')));
-  if (!legacy.k) legacy.k = q.get('k');
-  return legacy;
+// xmur3 + sfc32, mirrored bit-for-bit by the same functions in the builder.
+// Deliberately not crypto.subtle: it is unavailable over file://, and the page
+// has to work when opened straight from disk.
+function xmur3(str) {
+  let h = (1779033703 ^ str.length) >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353) >>> 0;
+    h = ((h << 13) | (h >>> 19)) >>> 0;
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507) >>> 0;
+    h = Math.imul(h ^ (h >>> 13), 3266489909) >>> 0;
+    h = (h ^ (h >>> 16)) >>> 0;
+    return h;
+  };
+}
+
+function sfc32(a, b, c, d) {
+  return function () {
+    let t = (a + b) >>> 0;
+    a = (b ^ (b >>> 9)) >>> 0;
+    b = (c + (c << 3)) >>> 0;
+    c = ((c << 21) | (c >>> 11)) >>> 0;
+    d = (d + 1) >>> 0;
+    t = (t + d) >>> 0;
+    c = (c + t) >>> 0;
+    return t;
+  };
+}
+
+function keystream(seed, stretch, n) {
+  const seeder = xmur3(seed);
+  const rnd = sfc32(seeder(), seeder(), seeder(), seeder());
+  for (let i = 0; i < stretch; i++) rnd();
+  const out = new Uint8Array(n);
+  for (let i = 0; i < n; i += 4) {
+    const v = rnd();
+    out[i] = (v >>> 24) & 255;
+    if (i + 1 < n) out[i + 1] = (v >>> 16) & 255;
+    if (i + 2 < n) out[i + 2] = (v >>> 8) & 255;
+    if (i + 3 < n) out[i + 3] = v & 255;
+  }
+  return out;
+}
+
+function fnv16(bytes) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < bytes.length; i++) h = Math.imul(h ^ bytes[i], 16777619) >>> 0;
+  return (((h >>> 16) ^ h) & 0xffff) >>> 0;
+}
+
+// Returns the invite object, or null for any token that doesn't decode to a
+// block whose checksum matches — a wrong key must fail, never show wrong names.
+function decodeToken(tok) {
+  const G = window.GUESTS;
+  if (!G || !G.b || !/^[A-Za-z0-9_-]+$/.test(tok)) return null;
+  const idLen = G.i || 4;
+  const id = tok.slice(0, idLen);
+  const key = tok.slice(idLen);
+  const block = G.b[id];
+  if (!key || !block) return null;
+  const data = b64uBytes(block);
+  const ks = keystream(id + ':' + key, G.s || 0, data.length);
+  const out = new Uint8Array(data.length);
+  for (let i = 0; i < data.length; i++) out[i] = data[i] ^ ks[i];
+  const sum = (out[0] << 8) | out[1];
+  const len = (out[2] << 8) | out[3];
+  if (len < 1 || 4 + len > out.length) return null;
+  const body = out.subarray(4, 4 + len);
+  if (fnv16(body) !== sum) return null;
+  return JSON.parse(new TextDecoder().decode(body));
 }
 
 let invite = null;
 try {
-  invite = readInvite();
+  const raw = location.hash.slice(1);
+  if (raw) invite = decodeToken(decodeURIComponent(raw));
 } catch (_) { invite = null; }
 
 const peopleEl = document.querySelector('.people');
@@ -179,11 +240,4 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// Dev helper — run in the console to mint invite links:
-//   makeInviteLink('Ewy i Arkadiusza Niegowskich', ['Ewa Niegowska','Arkadiusz Niegowski'], 'tajnyklucz')
-window.makeInviteLink = function (display, peopleArr, k) {
-  const json = JSON.stringify({ k: k || key || '', d: display, p: peopleArr });
-  const b64 = btoa(String.fromCharCode(...new TextEncoder().encode(json)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  return `${location.origin}${location.pathname}#${b64}`;
-};
+// Links are minted by build_encrypted_guestlist.py, which prints one per person.

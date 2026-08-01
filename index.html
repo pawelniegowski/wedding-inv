@@ -86,7 +86,8 @@ section{
   font-family:"Pinyon Script",cursive;
   font-size:clamp(1.4rem,3.4vw,2.1rem);
   line-height:1;
-  margin:.05em 0;
+  margin:.0em 0;
+  padding-bottom: 0.5em;
 }
 .amp::before{content:"– ";font-family:"Cormorant Garamond",serif;font-size:.7em;vertical-align:.2em}
 .amp::after{content:" –";font-family:"Cormorant Garamond",serif;font-size:.7em;vertical-align:.2em}
@@ -99,7 +100,7 @@ section{
   margin:.1em 0;
 }
 .day{
-  margin-top:1.6em;
+  /*margin-top:1.6em;*/
   font-size:clamp(1.05rem,2.4vw,1.45rem);
   letter-spacing:.3em;
   text-indent:.3em;
@@ -151,7 +152,7 @@ h2{
 .lead{
   font-style:italic;
   font-size:clamp(1.15rem,2.3vw,1.35rem);
-  margin-top:1.2em;
+  /*margin-top:1.2em;*/
 }
 form{
   margin-top:2.2em;
@@ -308,7 +309,8 @@ footer{
     <p class="amp">oraz</p>
     <h1 class="names">Paweł Niegowski</h1>
     <p class="eyebrow">mają przyjemność zaprosić</p>
-    <p class="people">Ewę i Arkadiusza Niegowskich</p>
+    <!-- replaced from the decoded invite; a real name here would leak into the repo -->
+    <p class="people">Szanownych Gości</p>
     <p class="eyebrow">na obiad weselny</p>
     <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
     <p class="city"><a href="https://maps.app.goo.gl/c3KKdzaPyXcYRtjc9" target="_blank" rel="noopener">w
@@ -317,9 +319,6 @@ footer{
       — otwórz w Mapach Google</span></a></p>
     <p class="day">piątek, 11 września 2026</p>
     <p class="day">16:00</p>
-  </section>
-
-  <section>
     <svg class="sprig" viewBox="0 0 120 26" aria-hidden="true"><use href="#sprigart"/></svg>
     <p class="lead">Prosimy o potwierdzenie przybycia do 20 sierpnia</p>
 
@@ -341,6 +340,7 @@ footer{
 </footer>
 
 <script src="config.js"></script>
+<script src="guests.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
