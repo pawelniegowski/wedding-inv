@@ -15,21 +15,41 @@
   --gold:#b5762a;
   --gold-dark:#8f5a1d;
   --rust:#7a4a26;
+  --margin:clamp(10px,1.8vw,22px);
+  --wash:radial-gradient(ellipse at 50% 30%, rgba(255,255,255,.5), rgba(93,74,48,.07) 90%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:var(--paper);
-  background-image:radial-gradient(ellipse at 50% 30%, rgba(255,255,255,.5), rgba(93,74,48,.07) 90%);
+  background-color:var(--paper);
+  background-image:var(--wash);
+  /* viewport-anchored, so the margin mask below can reuse the identical
+     background and line up with it seam-free at any scroll position */
+  background-attachment:fixed;
   color:var(--ink);
   font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
   line-height:1.6;
   overflow-x:hidden;
 }
+/* Opaque paper margin outside the frame. Without it the frame is just a
+   hairline and text scrolls visibly past it into the margin; the stationery
+   illusion needs the border to be an edge, not an overlay. Four bars rather
+   than one clip-path'd box: no fill-rule support to worry about on old phones. */
+.mask{position:fixed;inset:0;z-index:39;pointer-events:none}
+.mask i{
+  position:absolute;
+  background-color:var(--paper);
+  background-image:var(--wash);
+  background-attachment:fixed;
+}
+.mask i:nth-child(1){top:0;left:0;right:0;height:var(--margin)}
+.mask i:nth-child(2){bottom:0;left:0;right:0;height:var(--margin)}
+.mask i:nth-child(3){top:0;bottom:0;left:0;width:var(--margin)}
+.mask i:nth-child(4){top:0;bottom:0;right:0;width:var(--margin)}
 /* stationery frame pinned to the viewport */
 .frame{
   position:fixed;
-  inset:clamp(10px,1.8vw,22px);
+  inset:var(--margin);
   border:1.2px solid #4f3d27;
   pointer-events:none;
   z-index:40;
@@ -40,6 +60,10 @@ body{
   inset:4px;
   border:1px solid rgba(93,74,48,.4);
 }
+/* Positioned against the frame's padding box, so the negative offsets spill
+   them over the ruled edge. z-index:1 lifts them above .frame::after (the
+   inner hairline); the frame's own z-index:40 carries the whole group above
+   the mask and every page element. */
 svg.branch{
   position:absolute;
   pointer-events:none;
@@ -254,8 +278,6 @@ footer{
 </head>
 <body>
 
-<div class="frame" aria-hidden="true"></div>
-
 <!-- shared defs: leaf + leafy frond + full corner branch -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -302,9 +324,16 @@ footer{
   </defs>
 </svg>
 
+<div class="mask" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<!-- branches live inside the frame so they stay pinned to its corners while
+     the page scrolls, and spill over the ruled edge into the margin -->
+<div class="frame" aria-hidden="true">
+  <svg class="branch tr" viewBox="0 0 230 230"><use href="#branchart"/></svg>
+  <svg class="branch bl" viewBox="0 0 230 230"><use href="#branchart"/></svg>
+</div>
+
 <main>
   <section class="hero">
-    <svg class="branch tr" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
     <h1 class="names">Sofiia Serdiuk</h1>
     <p class="amp">oraz</p>
     <h1 class="names">Paweł Niegowski</h1>
@@ -335,9 +364,9 @@ footer{
   </section>
 </main>
 
-<footer>
-  <svg class="branch bl" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
-</footer>
+<!-- kept as a spacer: the branch it used to hold is now fixed to the frame,
+     but the form still needs room above the bottom edge -->
+<footer></footer>
 
 <script src="config.js"></script>
 <script src="guests.js"></script>
