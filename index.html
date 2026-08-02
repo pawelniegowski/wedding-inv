@@ -24,60 +24,52 @@ html{scroll-behavior:smooth}
 body{
   background-color:var(--paper);
   background-image:var(--wash);
-  /* viewport-anchored, so the margin mask below can reuse the identical
-     background and line up with it seam-free at any scroll position */
-  background-attachment:fixed;
   color:var(--ink);
   font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
   line-height:1.6;
   overflow-x:hidden;
+  /* the paper margin the sheet's rule sits inside; padding rather than a
+     margin on .sheet so it can't collapse through the body */
+  padding:var(--margin);
 }
-/* Opaque paper margin outside the frame. Without it the frame is just a
-   hairline and text scrolls visibly past it into the margin; the stationery
-   illusion needs the border to be an edge, not an overlay. Four bars rather
-   than one clip-path'd box: no fill-rule support to worry about on old phones. */
-.mask{position:fixed;inset:0;z-index:39;pointer-events:none}
-.mask i{
-  position:absolute;
-  background-color:var(--paper);
-  background-image:var(--wash);
-  background-attachment:fixed;
-}
-.mask i:nth-child(1){top:0;left:0;right:0;height:var(--margin)}
-.mask i:nth-child(2){bottom:0;left:0;right:0;height:var(--margin)}
-.mask i:nth-child(3){top:0;bottom:0;left:0;width:var(--margin)}
-.mask i:nth-child(4){top:0;bottom:0;right:0;width:var(--margin)}
-/* stationery frame pinned to the viewport */
-.frame{
-  position:fixed;
-  inset:var(--margin);
+/* The stationery sheet: a ruled border around the whole page, scrolling with
+   it. The content lives inside the border, so nothing can slide out past it —
+   which is why there is no viewport mask here. */
+.sheet{
+  position:relative;
   border:var(--rule) solid #4f3d27;
-  pointer-events:none;
-  z-index:40;
+  min-height:calc(100vh - 2 * var(--margin));
 }
-.frame::after{
+.sheet::after{
   content:"";
   position:absolute;
   inset:4px;
   border:1px solid rgba(93,74,48,.4);
+  pointer-events:none;
 }
-/* Positioned against the frame's padding box, so the negative offsets spill
-   them over the ruled edge. z-index:1 lifts them above .frame::after (the
-   inner hairline); the frame's own z-index:40 carries the whole group above
-   the mask and every page element. */
+/* Branches ride above both rules and all page content, spilling over the edge.
+   z-index:2 clears .sheet::after (the inner hairline) and the sections, which
+   are position:relative at z-auto. */
 svg.branch{
   position:absolute;
   pointer-events:none;
-  z-index:1;
+  z-index:2;
   width:clamp(120px,26vw,380px);
   height:auto;
 }
-/* Horizontally flush with the screen: the frame's padding box is already inset
-   by the margin plus its own rule, so pull back by exactly that much. The
-   artwork runs to its viewBox edge (the stem starts at x=232 of 230), so the
-   branch meets the screen edge rather than stopping short of it. */
-.branch.tr{top:-1.5vw;right:calc(-1 * (var(--margin) + var(--rule)))}
-.branch.bl{bottom:-1.5vw;left:calc(-1 * (var(--margin) + var(--rule)));transform:rotate(180deg)}
+/* Flush with the screen on every side: the sheet's padding box is already
+   inset by the margin plus its own rule, so pull back by exactly that. The
+   artwork runs past its own viewBox (the stem starts at x=232 of 230), so
+   there is no transparent gutter to leave a seam. */
+.branch.tr{
+  top:calc(-1 * (var(--margin) + var(--rule)));
+  right:calc(-1 * (var(--margin) + var(--rule)));
+}
+.branch.bl{
+  bottom:calc(-1 * (var(--margin) + var(--rule)));
+  left:calc(-1 * (var(--margin) + var(--rule)));
+  transform:rotate(180deg);
+}
 
 main{position:relative}
 section{
@@ -329,13 +321,9 @@ footer{
   </defs>
 </svg>
 
-<div class="mask" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-<!-- branches live inside the frame so they stay pinned to its corners while
-     the page scrolls, and spill over the ruled edge into the margin -->
-<div class="frame" aria-hidden="true">
-  <svg class="branch tr" viewBox="0 0 230 230"><use href="#branchart"/></svg>
-  <svg class="branch bl" viewBox="0 0 230 230"><use href="#branchart"/></svg>
-</div>
+<div class="sheet">
+<svg class="branch tr" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
+<svg class="branch bl" viewBox="0 0 230 230" aria-hidden="true"><use href="#branchart"/></svg>
 
 <main>
   <section class="hero">
@@ -369,9 +357,10 @@ footer{
   </section>
 </main>
 
-<!-- kept as a spacer: the branch it used to hold is now fixed to the frame,
-     but the form still needs room above the bottom edge -->
+<!-- kept as a spacer: the branch it used to hold now hangs off the sheet
+     corner, but the form still needs room above the bottom rule -->
 <footer></footer>
+</div>
 
 <script src="config.js"></script>
 <script src="guests.js"></script>
