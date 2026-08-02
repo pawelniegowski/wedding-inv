@@ -16,6 +16,7 @@
   --gold-dark:#8f5a1d;
   --rust:#7a4a26;
   --margin:clamp(10px,1.8vw,22px);
+  --rule:1.2px;
   --wash:radial-gradient(ellipse at 50% 30%, rgba(255,255,255,.5), rgba(93,74,48,.07) 90%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -50,7 +51,7 @@ body{
 .frame{
   position:fixed;
   inset:var(--margin);
-  border:1.2px solid #4f3d27;
+  border:var(--rule) solid #4f3d27;
   pointer-events:none;
   z-index:40;
 }
@@ -71,8 +72,12 @@ svg.branch{
   width:clamp(120px,26vw,380px);
   height:auto;
 }
-.branch.tr{top:-1.5vw;right:-1.5vw}
-.branch.bl{bottom:-1.5vw;left:-1.5vw;transform:rotate(180deg)}
+/* Horizontally flush with the screen: the frame's padding box is already inset
+   by the margin plus its own rule, so pull back by exactly that much. The
+   artwork runs to its viewBox edge (the stem starts at x=232 of 230), so the
+   branch meets the screen edge rather than stopping short of it. */
+.branch.tr{top:-1.5vw;right:calc(-1 * (var(--margin) + var(--rule)))}
+.branch.bl{bottom:-1.5vw;left:calc(-1 * (var(--margin) + var(--rule)));transform:rotate(180deg)}
 
 main{position:relative}
 section{
